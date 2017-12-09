@@ -5,10 +5,14 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
+import com.monsalachai.dndthing.entry.BaseEntry;
+import com.monsalachai.dndthing.entry.EntryFactory;
+import com.monsalachai.dndthing.entry.WeaponEntry;
 
 /**
  * An activity representing a single Tab detail screen. This
@@ -21,6 +25,31 @@ public class TabDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Test some of the BaseEntry stuff:
+        String raw =
+                "{\n" +
+                "    \"typeid\" : 2,\n" +
+                "    \"rollable\" : true,\n" +
+                "    \"label\" : \"Test Sword of Swordiness\",\n" +
+                "    \"constant\" : 23,\n" +
+                "    \"die\": 12,\n" +
+                "    \"modifier\" : 2,\n" +
+                "\n" +
+                "    \"itemWeight\" : 150,\n" +
+                "    \"itemDurability\" : 10,\n" +
+                "    \"itemConsumable\" : false,\n" +
+                "    \"itemWondrous\"   : false,\n" +
+                "\n" +
+                "    \"weaponType\" : \"g\",\n" +
+                "    \"weaponDamage\": \"s\"\n" +
+                "}";
+
+        WeaponEntry we = (WeaponEntry)EntryFactory.deflate(raw);
+
+        Log.i("ETest", we.serialize().toString());
+        Log.i("ETest", we.getRoll());
+
         setContentView(R.layout.activity_tab_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
