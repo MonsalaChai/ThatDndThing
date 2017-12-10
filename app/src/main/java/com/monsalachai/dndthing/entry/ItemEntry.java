@@ -27,46 +27,53 @@ public class ItemEntry extends BaseEntry {
     public ItemEntry(JsonObject json)
     {
         super(json);
+        json = safeGet(json, "item");
+        if (json == null) throw new MalformedEntryException("Malformed ID");
 
-        _count      = safeGet(json, "itemCount", 1);
-        _weight     = safeGet(json, "itemWeight", 1);
-        _durability = safeGet(json, "itemDurability", 1);
-        _consumable = safeGet(json, "itemConsumable", false);
-        _wondrous   = safeGet(json, "itemWondrous", false);
+        _count      = safeGet(json, "count", 1);
+        _weight     = safeGet(json, "weight", 1);
+        _durability = safeGet(json, "durability", 1);
+        _consumable = safeGet(json, "consumable", false);
+        _wondrous   = safeGet(json, "wondrous", false);
     }
 
     public ItemEntry(String raw)
     {
         super(raw);
         JsonObject json = new JsonParser().parse(raw).getAsJsonObject();
+        json = safeGet(json, "item");
+        if (json == null) throw new MalformedEntryException("Malformed ID");
 
-        _count      = safeGet(json, "itemCount", 1);
-        _weight     = safeGet(json, "itemWeight", 1);
-        _durability = safeGet(json, "itemDurability", 1);
-        _consumable = safeGet(json, "itemConsumable", false);
-        _wondrous   = safeGet(json, "itemWondrous", false);
+        _count      = safeGet(json, "count", 1);
+        _weight     = safeGet(json, "weight", 1);
+        _durability = safeGet(json, "durability", 1);
+        _consumable = safeGet(json, "consumable", false);
+        _wondrous   = safeGet(json, "wondrous", false);
     }
 
     @Override
     public JsonObject serialize()
     {
-        JsonObject json = super.serialize();
+        JsonObject master = super.serialize();
+        master.addProperty("typeid", 1);
 
-        json.addProperty("typeid", 1);
-        json.addProperty("itemCount", _count);
-        json.addProperty("itemWeight", _weight);
-        json.addProperty("itemDurability", _durability);
-        json.addProperty("itemConsumable", _consumable);
-        json.addProperty("itemWondrous", _wondrous);
+        JsonObject json = new JsonObject();
+        master.add("item", json);
 
-        return json;
+        json.addProperty("count", _count);
+        json.addProperty("weight", _weight);
+        json.addProperty("durability", _durability);
+        json.addProperty("consumable", _consumable);
+        json.addProperty("wondrous", _wondrous);
+
+        return master;
     }
 
     @Override
     public int performRoll()
     {
-        int roll = super.performRoll();
-        if (_consumable) _count -= 1;
+        int roll = _roll();
+        if (_consumable && canRoll()) _count -= 1;
         return roll;
     }
 

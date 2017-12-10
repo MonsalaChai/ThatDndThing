@@ -1,6 +1,7 @@
 package com.monsalachai.dndthing.entry;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 /**
@@ -30,9 +31,11 @@ public class WeaponEntry extends ItemEntry {
         _ammotype = "None";
     }
 
-    public WeaponEntry(JsonObject json)
+    public WeaponEntry(JsonObject json) throws  MalformedEntryException
     {
         super(json);
+        try { json = json.getAsJsonObject("weapon"); }
+        catch (JsonParseException e) { throw new MalformedEntryException("Malformed ID"); }
 
         _type       = _convertStringToWType(safeGet(json, "weaponType", "??"));
         _damagetype = _convertStringToDtype(safeGet(json, "weaponDamageType", "??"));
@@ -40,10 +43,13 @@ public class WeaponEntry extends ItemEntry {
         _ammotype   = safeGet(json, "weaponAmmoType", "None");
     }
 
-    public WeaponEntry(String raw)
+    public WeaponEntry(String raw) throws MalformedEntryException
     {
         super(raw);
         JsonObject json = new JsonParser().parse(raw).getAsJsonObject();
+        try { json = json.getAsJsonObject("weapon"); }
+        catch (JsonParseException e) { throw new MalformedEntryException("Malformed ID"); }
+
 
         _type       = _convertStringToWType(safeGet(json, "weaponType", "??"));
         _damagetype = _convertStringToDtype(safeGet(json, "weaponDamageType", "??"));
@@ -54,14 +60,26 @@ public class WeaponEntry extends ItemEntry {
     @Override
     public JsonObject serialize()
     {
-        JsonObject json = super.serialize();
-        json.addProperty("typeid", 2);
-        json.addProperty("weaponType", _invertType(_type));
-        json.addProperty("weaponDamageType", _invertDamageType(_damagetype));
-        json.addProperty("weaponAmmoCount", _ammo);
-        json.addProperty("weaponAmmoType", _ammotype);
+        JsonObject master = super.serialize();
+        JsonObject json = new JsonObject();
 
-        return json;
+        master.addProperty("typeid", 2);
+        master.add("weapon", json);
+        json.addProperty("type", _invertType(_type));
+        json.addProperty("damageType", _invertDamageType(_damagetype));
+        json.addProperty("ammoCount", _ammo);
+        json.addProperty("ammoType", _ammotype);
+
+        return master;
+    }
+
+    @Override
+    public int performRoll()
+    {
+        int roll = _roll();
+        if (isConsumable() && canRoll())
+            _ammo -= 1;
+        return roll;
     }
 
     public WeaponType getType() { return _type; }

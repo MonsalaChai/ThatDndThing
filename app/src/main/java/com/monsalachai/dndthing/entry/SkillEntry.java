@@ -36,15 +36,19 @@ public class SkillEntry extends BaseEntry {
         _sources = null;
     }
 
-    public SkillEntry(JsonObject json) {
+    public SkillEntry(JsonObject json)
+    {
         super(json);
+        json = safeGet(json, "skills");
+        if (json == null) throw new MalformedEntryException("Malformed ID");
+
         _miscmod = 0;
         _sources = new LinkedList<>();
 
-        _ranks = json.get("skillRanks").getAsInt();
-        _classmod = json.get("skillClassSkill").getAsInt();
+        _ranks    = safeGet(json,  "ranks", 0);
+        _classmod = safeGet(json, "classSkill", 0);
 
-        for (JsonElement js : json.getAsJsonArray("skillMiscSources"))
+        for (JsonElement js : json.getAsJsonArray("miscSources"))
         {
             JsonObject jso = js.getAsJsonObject();
             MiscSources ms = new MiscSources(jso.get("mod").getAsInt(), jso.get("text").getAsString());
@@ -56,7 +60,16 @@ public class SkillEntry extends BaseEntry {
 
     public SkillEntry(String raw)
     {
-        JsonObject json = new JsonParser().parse(raw).getAsJsonObject();
+        super(raw);
+        JsonObject json = null;
+        try {
+            json = new JsonParser().parse(raw).getAsJsonObject().getAsJsonObject("skills");
+        }
+        catch (com.google.gson.JsonParseException e) { throw new MalformedEntryException("Malformed ID"); }
+
+        _ranks = safeGet(json, "ranks", 0);
+        _classmod = safeGet(json, "classSkill", 0);
+
         _miscmod = 0;
         _sources = new LinkedList<>();
 
@@ -74,10 +87,13 @@ public class SkillEntry extends BaseEntry {
     public JsonObject serialize()
     {
         JsonObject json = super.serialize();
-
         json.addProperty("typeid", 3);
-        json.addProperty("skillRanks", _ranks);
-        json.addProperty("skillClassSkill", _classmod);
+
+        JsonObject skillsjson = new JsonObject();
+        json.add("skills", skillsjson);
+
+        skillsjson.addProperty("skillRanks", _ranks);
+        skillsjson.addProperty("skillClassSkill", _classmod);
 
 
         // create a json array with _sources.
@@ -90,7 +106,7 @@ public class SkillEntry extends BaseEntry {
             ja.add(jo);
         }
 
-        json.add("skillMiscSources", ja);
+        skillsjson.add("skillMiscSources", ja);
 
         return json;
     }

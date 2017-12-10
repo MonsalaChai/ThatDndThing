@@ -12,8 +12,16 @@ import java.util.Random;
  */
 
 public class BaseEntry {
+    public class MalformedEntryException extends RuntimeException {
+        public MalformedEntryException(String message)
+        {
+            super(message);
+        }
+    }
+
     //  Note: <modifier>d<die> + <constant>
     protected boolean _rollable;
+    protected boolean _critable;
     protected int _die;
     protected int _modifier;
     protected int _constant;
@@ -22,8 +30,9 @@ public class BaseEntry {
     public BaseEntry() {
         // Default constructor.
         _rollable = false;
+        _critable = false;
         _die = 0;
-        _modifier = 0;
+        _modifier = 1;
         _constant = 0;
         _label = "Unknown"; // todo, figure out how to use R.string.unknown_entry instead
         //Resources.getSystem().getString(android.R.string.unknown_entry); //<-- cannot resolve symbol
@@ -31,18 +40,20 @@ public class BaseEntry {
 
     public BaseEntry(JsonObject json) {
         _rollable = safeGet(json, "rollable", false);
+        _critable = safeGet(json, "critable", false);
         _die      = safeGet(json, "die", 20);
         _constant = safeGet(json, "constant", 0);
-        _modifier = safeGet(json, "modifier", 0);
+        _modifier = safeGet(json, "modifier", 1);
         _label    = safeGet(json, "label", "Unknown");
     }
 
     public BaseEntry(String raw) {
         JsonObject json = new JsonParser().parse(raw).getAsJsonObject();
         _rollable = safeGet(json, "rollable", false);
+        _critable = safeGet(json, "critable", false);
         _die      = safeGet(json, "die", 20);
         _constant = safeGet(json, "constant", 0);
-        _modifier = safeGet(json, "modifier", 0);
+        _modifier = safeGet(json, "modifier", 1);
         _label    = safeGet(json, "label", "Unknown");
     }
 
@@ -61,16 +72,42 @@ public class BaseEntry {
     public String  getRoll() { return  (_rollable) ? String.format(Locale.US, "%dd%d+%d", _modifier, _die, _constant) : "Not Rollable";}
     public String getLabel() { return _label;}
     public int performRoll() {
+        return _roll();
+    }
+
+    protected int _roll()
+    {
         if (!_rollable)
             return 0;
+
+        Log.d("Roll", "Is rollable.");
+
+        StringBuilder logmessage = new StringBuilder();
+        logmessage.append("Rolled: ");
+        logmessage.append(getRoll() + " -> ");
 
         Random rng = new Random();
         int roll = 0;
         for (int i = 0; i < _modifier; i++)
-            roll += rng.nextInt(_die) + 1;  // 1 -> _die
-
+        {
+            int thisdie = rng.nextInt(_die) + 1; // 1 -> _die
+            roll += thisdie;
+            logmessage.append(String.format(Locale.US, "%d, ", thisdie));
+        }
+        logmessage.append(String.format(Locale.US,"+ %d", _constant));
         roll += _constant;
+
+        logmessage.append(" = ");
+        logmessage.append(roll);
+        Log.d("Roll", logmessage.toString());
         return roll;
+    }
+
+    protected JsonObject safeGet(JsonObject json, String tag)
+    {
+        // well, safe-ish. Can still be mis-used to create a NPE.
+        try { return json.getAsJsonObject(tag); }
+        catch (com.google.gson.JsonParseException e) { return null; }
     }
 
     protected String safeGet(JsonObject json, String tag,  String defval)

@@ -1,5 +1,6 @@
 package com.monsalachai.dndthing;
 
+import android.content.ClipData;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,7 +13,10 @@ import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 import com.monsalachai.dndthing.entry.BaseEntry;
 import com.monsalachai.dndthing.entry.EntryFactory;
+import com.monsalachai.dndthing.entry.ItemEntry;
 import com.monsalachai.dndthing.entry.WeaponEntry;
+
+import java.util.Map;
 
 /**
  * An activity representing a single Tab detail screen. This
@@ -26,29 +30,26 @@ public class TabDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Test some of the BaseEntry stuff:
-        String raw =
-                "{\n" +
-                "    \"typeid\" : 2,\n" +
-                "    \"rollable\" : true,\n" +
-                "    \"label\" : \"Test Sword of Swordiness\",\n" +
-                "    \"constant\" : 23,\n" +
-                "    \"die\": 12,\n" +
-                "    \"modifier\" : 2,\n" +
+        String raw =   "{\n" +
+                "    \"rollable\":true,\n" +
+                "    \"die\":8,\n" +
+                "    \"constant\":3,\n" +
+                "    \"label\":\"Potion of Potioning\",\n" +
+                "    \"typeid\":1,\n" +
+                "    \"item\" : {\n" +
+                "        \"weight\":150,\n" +
+                "        \"durability\":10,\n" +
+                "        \"consumable\":false,\n" +
+                "        \"wondrous\":true\n" +
+                "    }\n" +
                 "\n" +
-                "    \"itemWeight\" : 150,\n" +
-                "    \"itemDurability\" : 10,\n" +
-                "    \"itemConsumable\" : false,\n" +
-                "    \"itemWondrous\"   : false,\n" +
-                "\n" +
-                "    \"weaponType\" : \"g\",\n" +
-                "    \"weaponDamage\": \"s\"\n" +
                 "}";
 
-        WeaponEntry we = (WeaponEntry)EntryFactory.deflate(raw);
+        ItemEntry ie = (ItemEntry)EntryFactory.deflate(raw);
 
-        Log.i("ETest", we.serialize().toString());
-        Log.i("ETest", we.getRoll());
+        Log.i("ETest", ie.getRoll());
+        Log.i("ETest", String.format("Rolled: %d", ie.performRoll()));
+        Log.i("ETest", ie.serialize().toString());
 
         setContentView(R.layout.activity_tab_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
