@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">DnDThing</string>
     <string name="title_tab_detail">Tab Detail</string>
+    <string name="unknown_entry">Unknown</string>
 </resources>

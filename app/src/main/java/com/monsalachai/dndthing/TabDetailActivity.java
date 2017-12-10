@@ -1,14 +1,22 @@
 package com.monsalachai.dndthing;
 
+import android.content.ClipData;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
+import com.monsalachai.dndthing.entry.BaseEntry;
+import com.monsalachai.dndthing.entry.EntryFactory;
+import com.monsalachai.dndthing.entry.ItemEntry;
+import com.monsalachai.dndthing.entry.WeaponEntry;
+
+import java.util.Map;
 
 /**
  * An activity representing a single Tab detail screen. This
@@ -21,6 +29,28 @@ public class TabDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        String raw =   "{\n" +
+                "    \"rollable\":true,\n" +
+                "    \"die\":8,\n" +
+                "    \"constant\":3,\n" +
+                "    \"label\":\"Potion of Potioning\",\n" +
+                "    \"typeid\":1,\n" +
+                "    \"item\" : {\n" +
+                "        \"weight\":150,\n" +
+                "        \"durability\":10,\n" +
+                "        \"consumable\":false,\n" +
+                "        \"wondrous\":true\n" +
+                "    }\n" +
+                "\n" +
+                "}";
+
+        ItemEntry ie = (ItemEntry)EntryFactory.deflate(raw);
+
+        Log.i("ETest", ie.getRoll());
+        Log.i("ETest", String.format("Rolled: %d", ie.performRoll()));
+        Log.i("ETest", ie.serialize().toString());
+
         setContentView(R.layout.activity_tab_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
