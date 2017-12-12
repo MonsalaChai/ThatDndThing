@@ -4,12 +4,16 @@ import android.app.Activity;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.monsalachai.dndthing.dummy.DummyContent;
+import com.monsalachai.dndthing.entry.EntryFactory;
+import com.monsalachai.dndthing.entry.ItemEntry;
 
 /**
  * A fragment representing a single Tab detail screen.
@@ -28,7 +32,6 @@ public class TabDetailFragment extends Fragment {
      * The dummy content this fragment is presenting.
      */
     private DummyContent.DummyItem mItem;
-
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -40,23 +43,40 @@ public class TabDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
-
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-            if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.content);
-            }
+        if (getArguments().containsKey("title")) {
+            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout);
+            if (appBarLayout != null)
+                appBarLayout.setTitle(getArguments().getString("title"));
         }
+
+        String raw =
+                "{\n" +
+                "    \"rollable\":true,\n" +
+                "    \"die\":8,\n" +
+                "    \"constant\":3,\n" +
+                "    \"label\":\"Potion of Potioning\",\n" +
+                "    \"typeid\":1,\n" +
+                "    \"item\" : {\n" +
+                "        \"weight\":150,\n" +
+                "        \"durability\":10,\n" +
+                "        \"consumable\":false,\n" +
+                "        \"wondrous\":true\n" +
+                "    }\n" +
+                "\n" +
+                "}";
+
+        ItemEntry ie = (ItemEntry) EntryFactory.deflate(raw);
+
+        Log.i("ETest", ie.getRoll());
+        Log.i("ETest", String.format("Rolled: %d", ie.performRoll()));
+        Log.i("ETest", ie.serialize().toString());
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        /*
         View rootView = inflater.inflate(R.layout.tab_detail, container, false);
 
         // Show the dummy content as text in a TextView.
@@ -65,5 +85,24 @@ public class TabDetailFragment extends Fragment {
         }
 
         return rootView;
+        */
+        String raw =
+                "{\n" +
+                        "    \"rollable\":true,\n" +
+                        "    \"die\":8,\n" +
+                        "    \"constant\":3,\n" +
+                        "    \"label\":\"Potion of Potioning\",\n" +
+                        "    \"typeid\":1,\n" +
+                        "    \"item\" : {\n" +
+                        "        \"weight\":150,\n" +
+                        "        \"durability\":10,\n" +
+                        "        \"consumable\":false,\n" +
+                        "        \"wondrous\":true\n" +
+                        "    }\n" +
+                        "\n" +
+                        "}";
+
+        ItemEntry ie = (ItemEntry) EntryFactory.deflate(raw);
+        return ie.generateView(getActivity().getApplicationContext());
     }
 }

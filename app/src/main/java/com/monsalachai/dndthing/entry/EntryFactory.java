@@ -11,12 +11,12 @@ import com.google.gson.JsonParser;
  */
 
 public class EntryFactory {
-    public static BaseEntry deflate(String raw)
+    public static Entry deflate(String raw)
     {
         return deflate(new JsonParser().parse(raw).getAsJsonObject());
     }
 
-    public static BaseEntry deflate(JsonObject json)
+    public static Entry deflate(JsonObject json)
     {
         int id;
         try
@@ -37,8 +37,8 @@ public class EntryFactory {
                 return new SkillEntry(json);
 
             default:
-                Log.w("ENTRYF", "Unable to interpret typeid. Falling back to BaseEntry");
-                return new BaseEntry(json);
+                Log.w("ENTRYF", "Unable to interpret typeid. Falling back to Entry");
+                return new Entry(json);
         }
     }
 }
