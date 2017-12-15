@@ -52,7 +52,7 @@ public class TabDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d("TDF", getClass().toString() + ".onCreateView invoked.");
-        Log.d("TDF", "Container: " + container.toString());
+        Log.d("TDF", "Container: " + ((container == null) ? "null" : container.toString()));
         LinearLayout rootView = (LinearLayout) inflater.inflate(R.layout.fragment_tab_detail, container, false);
         String raw =
                 "{\n" +

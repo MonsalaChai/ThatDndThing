@@ -70,7 +70,7 @@ public class Entry {
 
             // freaking java man. No implicit conversion between double and float? really?
             setTextSizeForWidth(_paint, 400, "Hello World");
-            canvas.drawText("Hello World", (float)(getWidth()/ 2.0), (float)(getHeight() / 2.0), _paint);
+            canvas.drawText("Hello World", (float)(getWidth()/ 2.0) - 200, (float)(getHeight() / 2.0), _paint);
 
         }
 
