@@ -1,6 +1,7 @@
 package com.monsalachai.dndthing;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -29,10 +30,6 @@ public class TabDetailFragment extends Fragment {
     public static final String ARG_ITEM_ID = "item_id";
 
     /**
-     * The dummy content this fragment is presenting.
-     */
-    private DummyContent.DummyItem mItem;
-    /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
@@ -48,44 +45,15 @@ public class TabDetailFragment extends Fragment {
             if (appBarLayout != null)
                 appBarLayout.setTitle(getArguments().getString("title"));
         }
-
-        String raw =
-                "{\n" +
-                "    \"rollable\":true,\n" +
-                "    \"die\":8,\n" +
-                "    \"constant\":3,\n" +
-                "    \"label\":\"Potion of Potioning\",\n" +
-                "    \"typeid\":1,\n" +
-                "    \"item\" : {\n" +
-                "        \"weight\":150,\n" +
-                "        \"durability\":10,\n" +
-                "        \"consumable\":false,\n" +
-                "        \"wondrous\":true\n" +
-                "    }\n" +
-                "\n" +
-                "}";
-
-        ItemEntry ie = (ItemEntry) EntryFactory.deflate(raw);
-
-        Log.i("ETest", ie.getRoll());
-        Log.i("ETest", String.format("Rolled: %d", ie.performRoll()));
-        Log.i("ETest", ie.serialize().toString());
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        /*
-        View rootView = inflater.inflate(R.layout.tab_detail, container, false);
-
-        // Show the dummy content as text in a TextView.
-        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.tab_detail)).setText(mItem.details);
-        }
-
-        return rootView;
-        */
+        Log.d("TDF", getClass().toString() + ".onCreateView invoked.");
+        Log.d("TDF", "Container: " + container.toString());
+        LinearLayout rootView = (LinearLayout) inflater.inflate(R.layout.fragment_tab_detail, container, false);
         String raw =
                 "{\n" +
                         "    \"rollable\":true,\n" +
@@ -103,6 +71,11 @@ public class TabDetailFragment extends Fragment {
                         "}";
 
         ItemEntry ie = (ItemEntry) EntryFactory.deflate(raw);
-        return ie.generateView(getActivity().getApplicationContext());
+        View v = ie.generateView(getContext());
+
+        Drawable drawable = getActivity().getDrawable(R.drawable.tmpback);
+        v.setBackground(drawable);
+        rootView.addView(v);
+        return rootView;
     }
 }

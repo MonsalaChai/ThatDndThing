@@ -52,6 +52,8 @@ public class Entry {
 
             initDrawingResources();
             initOther();
+
+
         }
 
         public boolean rollIsEnabled() { return _showRoll; }
@@ -67,16 +69,11 @@ public class Entry {
             super.onDraw(canvas);
 
             // freaking java man. No implicit conversion between double and float? really?
-            setTextSizeForWidth(_paint, 200, "Hello World");
+            setTextSizeForWidth(_paint, 400, "Hello World");
             canvas.drawText("Hello World", (float)(getWidth()/ 2.0), (float)(getHeight() / 2.0), _paint);
 
         }
 
-        public void onClick(View view)
-        {
-            // create a snackbar message with a call back to perform the real roll.
-
-        }
 
         protected void setTextSizeForWidth(Paint paint, float desiredWidth, String sampletext)
         {
@@ -106,16 +103,14 @@ public class Entry {
                 @Override
                 public void onClick(View view) {
                     // create a snackbar message with the optional action to roll
-                    Snackbar.make(view, getRoll(), Snackbar.LENGTH_INDEFINITE)
-                            .setAction("Roll!", (_showRoll) ? new OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    Log.i("DBG", "Make the rolly thing!");
-                                    // can we just create another snackbar?
-                                    // should we pop up a floating activity thingy?
-                                    // etc.
-                                }
-                            } : null).show();
+                    OnClickListener ocl = new OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Log.i("OCL", "Do the thing with the rolly things.");
+                        }
+                    };
+                    Snackbar.make(view, getRoll(), Snackbar.LENGTH_LONG)
+                            .setAction("Roll!", (_showRoll) ? ocl : null).show();
                 }
             });
         }
@@ -182,7 +177,9 @@ public class Entry {
 
     public View generateView(Context context)
     {
-        return new EntryView(context);
+        EntryView ev = new EntryView(context);
+        ev.setRollEnabled(_rollable);
+        return ev;
     }
 
     protected int _roll()
