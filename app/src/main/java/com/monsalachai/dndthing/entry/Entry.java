@@ -1,9 +1,20 @@
 package com.monsalachai.dndthing.entry;
 
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.support.design.widget.Snackbar;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import com.monsalachai.dndthing.R;
+
 import java.util.Locale;
 import java.util.Random;
 
@@ -11,23 +22,111 @@ import java.util.Random;
  * Created by mesalu on 12/8/17.
  */
 
-public class BaseEntry {
+public class Entry {
+    // go-to exception for data malformation errors.
     public class MalformedEntryException extends RuntimeException {
-        public MalformedEntryException(String message)
+        MalformedEntryException(String message)
         {
             super(message);
         }
     }
 
-    //  Note: <modifier>d<die> + <constant>
-    protected boolean _rollable;
-    protected boolean _critable;
-    protected int _die;
-    protected int _modifier;
-    protected int _constant;
-    protected String _label;
+    // custom view class
+    public class EntryView extends View {
+        protected boolean _showRoll;
+        protected Paint _paint;
+        public EntryView(Context context) {
+            super(context);
+            initDrawingResources();
+            initOther();
+        }
+        public EntryView(Context context, AttributeSet attrs)
+        {
+            super(context, attrs);
+            TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
+                                                                     R.styleable.EntryView,
+                                                                     0, 0);
+            _showRoll = a.getBoolean(R.styleable.EntryView_showRoll, false);
 
-    public BaseEntry() {
+            a.recycle();
+
+            initDrawingResources();
+            initOther();
+
+
+        }
+
+        public boolean rollIsEnabled() { return _showRoll; }
+        public void setRollEnabled(boolean state)
+        {
+            _showRoll = state;
+            invalidate();
+            requestLayout();
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            super.onDraw(canvas);
+
+            // freaking java man. No implicit conversion between double and float? really?
+            setTextSizeForWidth(_paint, 400, "Hello World");
+            canvas.drawText("Hello World", (float)(getWidth()/ 2.0), (float)(getHeight() / 2.0), _paint);
+
+        }
+
+
+        protected void setTextSizeForWidth(Paint paint, float desiredWidth, String sampletext)
+        {
+            // again, WTF java. casting "double" to float...
+            final float initialSize = (float)48.0;
+
+            paint.setTextSize(initialSize);
+            Rect rect = new Rect();
+
+            paint.getTextBounds(sampletext, 0, sampletext.length(), rect);
+
+            // finalize size.
+            float finalSize = initialSize * desiredWidth / rect.width();
+            paint.setTextSize(finalSize);
+        }
+
+        protected void initDrawingResources()
+        {
+            // do any init for required drawing resources to save time during draw events.
+            _paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            _paint.setARGB(255, 192, 192, 192);
+        }
+
+        protected void initOther()
+        {
+            this.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // create a snackbar message with the optional action to roll
+                    OnClickListener ocl = new OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Log.i("OCL", "Do the thing with the rolly things.");
+                        }
+                    };
+                    Snackbar.make(view, getRoll(), Snackbar.LENGTH_LONG)
+                            .setAction("Roll!", (_showRoll) ? ocl : null).show();
+                }
+            });
+        }
+    }
+
+
+
+    //  Note: <modifier>d<die> + <constant>
+    private boolean _rollable;
+    private boolean _critable;
+    private int _die;
+    private int _modifier;
+    private int _constant;
+    private String _label;
+
+    Entry() {
         // Default constructor.
         _rollable = false;
         _critable = false;
@@ -38,7 +137,7 @@ public class BaseEntry {
         //Resources.getSystem().getString(android.R.string.unknown_entry); //<-- cannot resolve symbol
     }
 
-    public BaseEntry(JsonObject json) {
+    Entry(JsonObject json) {
         _rollable = safeGet(json, "rollable", false);
         _critable = safeGet(json, "critable", false);
         _die      = safeGet(json, "die", 20);
@@ -47,7 +146,7 @@ public class BaseEntry {
         _label    = safeGet(json, "label", "Unknown");
     }
 
-    public BaseEntry(String raw) {
+    Entry(String raw) {
         JsonObject json = new JsonParser().parse(raw).getAsJsonObject();
         _rollable = safeGet(json, "rollable", false);
         _critable = safeGet(json, "critable", false);
@@ -69,10 +168,18 @@ public class BaseEntry {
     }
 
     public boolean canRoll() { return _rollable; }
+    public boolean canCrit() { return _critable; }
     public String  getRoll() { return  (_rollable) ? String.format(Locale.US, "%dd%d+%d", _modifier, _die, _constant) : "Not Rollable";}
     public String getLabel() { return _label;}
     public int performRoll() {
         return _roll();
+    }
+
+    public View generateView(Context context)
+    {
+        EntryView ev = new EntryView(context);
+        ev.setRollEnabled(_rollable);
+        return ev;
     }
 
     protected int _roll()
@@ -84,13 +191,16 @@ public class BaseEntry {
 
         StringBuilder logmessage = new StringBuilder();
         logmessage.append("Rolled: ");
-        logmessage.append(getRoll() + " -> ");
+        logmessage.append(getRoll()).append(" -> ");
 
         Random rng = new Random();
         int roll = 0;
         for (int i = 0; i < _modifier; i++)
         {
             int thisdie = rng.nextInt(_die) + 1; // 1 -> _die
+
+            // todo: check for critical success.
+
             roll += thisdie;
             logmessage.append(String.format(Locale.US, "%d, ", thisdie));
         }

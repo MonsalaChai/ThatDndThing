@@ -7,7 +7,7 @@ import com.google.gson.JsonParser;
  * Created by mesalu on 12/9/17.
  */
 
-public class ItemEntry extends BaseEntry {
+public class ItemEntry extends Entry {
     private int _count;
     private int _weight;
     private int _durability;

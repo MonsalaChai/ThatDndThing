@@ -1,22 +1,13 @@
 package com.monsalachai.dndthing;
 
-import android.content.ClipData;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
-import com.monsalachai.dndthing.entry.BaseEntry;
-import com.monsalachai.dndthing.entry.EntryFactory;
-import com.monsalachai.dndthing.entry.ItemEntry;
-import com.monsalachai.dndthing.entry.WeaponEntry;
 
-import java.util.Map;
 
 /**
  * An activity representing a single Tab detail screen. This
@@ -30,45 +21,13 @@ public class TabDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String raw =   "{\n" +
-                "    \"rollable\":true,\n" +
-                "    \"die\":8,\n" +
-                "    \"constant\":3,\n" +
-                "    \"label\":\"Potion of Potioning\",\n" +
-                "    \"typeid\":1,\n" +
-                "    \"item\" : {\n" +
-                "        \"weight\":150,\n" +
-                "        \"durability\":10,\n" +
-                "        \"consumable\":false,\n" +
-                "        \"wondrous\":true\n" +
-                "    }\n" +
-                "\n" +
-                "}";
-
-        ItemEntry ie = (ItemEntry)EntryFactory.deflate(raw);
-
-        Log.i("ETest", ie.getRoll());
-        Log.i("ETest", String.format("Rolled: %d", ie.performRoll()));
-        Log.i("ETest", ie.serialize().toString());
-
         setContentView(R.layout.activity_tab_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        if (actionBar != null) { actionBar.setDisplayHomeAsUpEnabled(true);}
+
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
@@ -83,18 +42,22 @@ public class TabDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(TabDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(TabDetailFragment.ARG_ITEM_ID));
+
+            arguments.putString("title", "The Other Thing!");
+
             TabDetailFragment fragment = new TabDetailFragment();
             fragment.setArguments(arguments);
+
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.tab_detail_container, fragment)
                     .commit();
+            Log.d("TDA", "Fragment added...?");
         }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d("TDA", "a menu item was pressed!");
         int id = item.getItemId();
         if (id == android.R.id.home) {
             // This ID represents the Home or Up button. In the case of this

@@ -14,7 +14,7 @@ import java.util.LinkedList;
 /* Todo: discuss db 'user' entries, or a hard-set resource for each skill modification source
  * which would also help with things like determining _classmod. */
 
-public class SkillEntry extends BaseEntry {
+public class SkillEntry extends Entry {
     private class MiscSources
     {
         public int mod;
