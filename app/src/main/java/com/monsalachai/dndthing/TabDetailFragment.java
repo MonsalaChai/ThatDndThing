@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.monsalachai.dndthing.dummy.DummyContent;
 import com.monsalachai.dndthing.entry.EntryFactory;
 import com.monsalachai.dndthing.entry.ItemEntry;
+import com.monsalachai.dndthing.entry.WeaponEntry;
 
 /**
  * A fragment representing a single Tab detail screen.
@@ -74,6 +75,29 @@ public class TabDetailFragment extends Fragment {
         View v = ie.generateView(getContext());
 
         Drawable drawable = getActivity().getDrawable(R.drawable.tmpback);
+        v.setBackground(drawable);
+        rootView.addView(v);
+
+        raw = "{\n" +
+                "    \"typeid\" : 2,\n" +
+                "    \"critable\" : true,\n" +
+                "    \"die\" : 12,\n" +
+                "    \"constant\" : 32,\n" +
+                "    \"modifier\" : 3,\n" +
+                "    \"rollable\" : true,\n" +
+                "    \"label\" : \"Deathy Axe of Deathitude\", \n" +
+                "    \"weapon\" : {\n" +
+                "        \"type\" : \"magical\",\n" +
+                "        \"damageType\" : \"Slashing\"\n" +
+                "    },\n" +
+                "    \"item\" : {\n" +
+                "        \"count\" : 1,\n" +
+                "        \"durability\" : 1337\n" +
+                "    }\n" +
+                "}";
+
+        WeaponEntry we = (WeaponEntry) EntryFactory.deflate(raw);
+        v = we.generateView(getContext());
         v.setBackground(drawable);
         rootView.addView(v);
         return rootView;

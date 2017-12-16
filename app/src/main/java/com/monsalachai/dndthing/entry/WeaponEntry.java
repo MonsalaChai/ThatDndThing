@@ -31,19 +31,19 @@ public class WeaponEntry extends ItemEntry {
         _ammotype = "None";
     }
 
-    public WeaponEntry(JsonObject json) throws  MalformedEntryException
+    public WeaponEntry(JsonObject json)
     {
         super(json);
         try { json = json.getAsJsonObject("weapon"); }
         catch (JsonParseException e) { throw new MalformedEntryException("Malformed ID"); }
 
-        _type       = _convertStringToWType(safeGet(json, "weaponType", "??"));
-        _damagetype = _convertStringToDtype(safeGet(json, "weaponDamageType", "??"));
-        _ammo       = safeGet(json, "weaponAmmoCount", 0);
-        _ammotype   = safeGet(json, "weaponAmmoType", "None");
+        _type       = _convertStringToWType(safeGet(json, "type", "??"));
+        _damagetype = _convertStringToDtype(safeGet(json, "damageType", "??"));
+        _ammo       = safeGet(json, "ammoCount", 0);
+        _ammotype   = safeGet(json, "ammoType", "None");
     }
 
-    public WeaponEntry(String raw) throws MalformedEntryException
+    public WeaponEntry(String raw)
     {
         super(raw);
         JsonObject json = new JsonParser().parse(raw).getAsJsonObject();
@@ -51,10 +51,10 @@ public class WeaponEntry extends ItemEntry {
         catch (JsonParseException e) { throw new MalformedEntryException("Malformed ID"); }
 
 
-        _type       = _convertStringToWType(safeGet(json, "weaponType", "??"));
-        _damagetype = _convertStringToDtype(safeGet(json, "weaponDamageType", "??"));
-        _ammo       = safeGet(json, "weaponAmmoCount", 0);
-        _ammotype   = safeGet(json, "weaponAmmoType", "None");
+        _type       = _convertStringToWType(safeGet(json, "type", "??"));
+        _damagetype = _convertStringToDtype(safeGet(json, "damageType", "??"));
+        _ammo       = safeGet(json, "ammoCount", 0);
+        _ammotype   = safeGet(json, "ammoType", "None");
     }
 
     @Override
