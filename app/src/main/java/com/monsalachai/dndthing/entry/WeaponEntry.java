@@ -101,8 +101,13 @@ public class WeaponEntry extends ItemEntry {
 
     protected String getTypeDescriptor()
     {
-        // ever feel like doing things the hard way because you can?
-        return (mDamageType == getDamageType().Slash) ? "Slashing" : (mDamageType == DamageType.Pierce) ? "Piercing" : (mDamageType == DamageType.Blunt) ? "Bludgeoning" : "???";
+        if (mDamageType == DamageType.Slash)
+            return "Slashing";
+        else if (mDamageType == DamageType.Blunt)
+            return "Bludgeoning";
+        else if (mDamageType == DamageType.Pierce)
+            return "Piercing";
+        else return "???";
     }
 
     protected WeaponType _convertStringToWType(String param)
