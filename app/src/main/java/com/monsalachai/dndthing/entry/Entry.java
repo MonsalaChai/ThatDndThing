@@ -1,6 +1,9 @@
 package com.monsalachai.dndthing.entry;
 
+
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -93,7 +96,7 @@ public class Entry {
         final View v = inflater.inflate(R.layout.view_entry, null);
 
         // set some stuff up in v...
-        setCustomOnClickListener(v);
+        setCustomOnClickListener(v, context);
 
         TextView tv = v.findViewById(R.id.entry_label_tv);
         tv.setText(getLabel(), TextView.BufferType.NORMAL);
@@ -101,7 +104,7 @@ public class Entry {
         return v;
     }
 
-    protected void setCustomOnClickListener(final View v)
+    protected void setCustomOnClickListener(final View v, final Context context)
     {
         v.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,7 +112,22 @@ public class Entry {
                 Snackbar.make(v, getRollDescriptor(), Snackbar.LENGTH_INDEFINITE).setAction(getActionDescriptor(), (_rollable) ? new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Log.i("Entry", "They clicked the rolly-button! D:");
+                        Log.i("SnackRoll", "The user has issued a roll!");
+                        int roll = performRoll();
+                        Log.i("SnackRoll", "The user rolled: " + roll);
+
+                        // create a dialog:
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        builder.setMessage("You rolled: " + roll).setTitle("Roll Result").setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Log.i("dlg+b", "They pressed the okay button.");
+                            }
+                        });
+
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+
                     }
                 } : null).show();
             }

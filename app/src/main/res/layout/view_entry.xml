@@ -11,6 +11,7 @@
         android:textSize="@dimen/entry_label_text_size"
         android:gravity="center"
         android:focusable="false"
+        android:textColor="@color/textBlack"
         />
 
     <LinearLayout
@@ -25,8 +26,11 @@
             android:layout_height="@dimen/entry_longdesc_height"
             android:text="@string/helptext_coming"
             android:gravity="center"
-            android:textSize="@dimen/entry_longdesc_size"/>
+            android:textSize="@dimen/entry_longdesc_size"
+            android:textColor="@color/textBlack"/>
+
         <TextView
+            android:id="@+id/ThisIsaPlaceHolder"
             android:layout_width="match_parent"
             android:layout_height="@dimen/entry_longdesc_height" />
         
