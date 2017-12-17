@@ -3,4 +3,5 @@
     <string name="title_tab_detail">Tab Detail</string>
     <string name="unknown_entry">Unknown</string>
     <string name="helptext_coming">More help text coming soon!</string>
+    <string name="unused_longdesc">Unused description space</string>
 </resources>

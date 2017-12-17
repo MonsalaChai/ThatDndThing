@@ -45,21 +45,6 @@ public class TabListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.i("DBG", "The thing was pressed by the person.");
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Log.i("DBG", "The person clicked the other thing!");
-                            }
-                        }).show();
-            }
-        });
-
         View recyclerView = findViewById(R.id.tab_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);

@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import com.monsalachai.dndthing.App;
 import com.monsalachai.dndthing.R;
 
 import java.util.Locale;
@@ -32,58 +33,63 @@ public class Entry {
     }
 
     //  Note: <modifier>d<die> + <constant>
-    private boolean _rollable;
-    private boolean _critable;
-    private int _die;
-    private int _modifier;
-    private int _constant;
-    private String _label;
+    private boolean pRollable;
+    private boolean pCritable;
+    private int pDie;
+    private int pCoefficient;
+    private int pConstant;
+    private String pName;
+    private String pDescription;
 
     Entry() {
         // Default constructor.
-        _rollable = false;
-        _critable = false;
-        _die = 0;
-        _modifier = 1;
-        _constant = 0;
-        _label = "Unknown"; // todo, figure out how to use R.string.unknown_entry instead
-        //Resources.getSystem().getString(android.R.string.unknown_entry); //<-- cannot resolve symbol
+        pRollable    = false;
+        pCritable    = false;
+        pDie         = 0;
+        pCoefficient = 1;
+        pConstant    = 0;
+        pName        = App.getGlobalContext().getResources().getString(R.string.unknown_entry);
+        pDescription = App.getGlobalContext().getResources().getString(R.string.unused_longdesc);
     }
 
     Entry(JsonObject json) {
-        _rollable = safeGet(json, "rollable", false);
-        _critable = safeGet(json, "critable", false);
-        _die      = safeGet(json, "die", 20);
-        _constant = safeGet(json, "constant", 0);
-        _modifier = safeGet(json, "modifier", 1);
-        _label    = safeGet(json, "label", "Unknown");
+        pRollable    = safeGet(json, "rollable", false);
+        pCritable    = safeGet(json, "critable", false);
+        pDie         = safeGet(json, "die", 20);
+        pConstant    = safeGet(json, "constant", 0);
+        pCoefficient = safeGet(json, "coefficient", 1);
+        pName        = safeGet(json, "label", App.getGlobalContext().getResources().getString(R.string.unknown_entry));
+        pDescription = safeGet(json, "desc", App.getGlobalContext().getResources().getString(R.string.unused_longdesc));
     }
 
     Entry(String raw) {
         JsonObject json = new JsonParser().parse(raw).getAsJsonObject();
-        _rollable = safeGet(json, "rollable", false);
-        _critable = safeGet(json, "critable", false);
-        _die      = safeGet(json, "die", 20);
-        _constant = safeGet(json, "constant", 0);
-        _modifier = safeGet(json, "modifier", 1);
-        _label    = safeGet(json, "label", "Unknown");
+        pRollable    = safeGet(json, "rollable", false);
+        pCritable    = safeGet(json, "critable", false);
+        pDie         = safeGet(json, "die", 20);
+        pConstant    = safeGet(json, "constant", 0);
+        pCoefficient = safeGet(json, "coefficient", 1);
+        pName        = safeGet(json, "label", App.getGlobalContext().getResources().getString(R.string.unknown_entry));
+        pDescription = safeGet(json, "desc", App.getGlobalContext().getResources().getString(R.string.unused_longdesc));
     }
 
     public JsonObject serialize() {
         JsonObject json = new JsonObject();
 
-        json.add("rollable", new JsonPrimitive(_rollable));
-        json.add("die", new JsonPrimitive(_die));
-        json.add("constant", new JsonPrimitive(_constant));
-        json.add("label", new JsonPrimitive(_label));
+        json.add("rollable", new JsonPrimitive(pRollable));
+        json.add("die", new JsonPrimitive(pDie));
+        json.add("coefficient", new JsonPrimitive(pCoefficient));
+        json.add("constant", new JsonPrimitive(pConstant));
+        json.add("label", new JsonPrimitive(pName));
+        json.add("desc", new JsonPrimitive(pDescription));
 
         return json;
     }
 
-    public boolean canRoll() { return _rollable; }
-    public boolean canCrit() { return _critable; }
-    public String getRollDescriptor() { return  (_rollable) ? String.format(Locale.US, "%dd%d+%d", _modifier, _die, _constant) : "Not Rollable";}
-    public String getLabel() { return _label;}
+    public boolean canRoll() { return pRollable; }
+    public boolean canCrit() { return pCritable; }
+    public String getRollDescriptor() { return  (pRollable) ? String.format(Locale.US, "%dd%d+%d", pCoefficient, pDie, pConstant) : "Not Rollable";}
+    public String getLabel() { return pName;}
     public String getActionDescriptor() { return "Roll!"; }
     public int performRoll() {
         return _roll();
@@ -100,6 +106,8 @@ public class Entry {
 
         TextView tv = v.findViewById(R.id.entry_label_tv);
         tv.setText(getLabel(), TextView.BufferType.NORMAL);
+        tv = v.findViewById(R.id.entry_longdesc);
+        tv.setText(pDescription, TextView.BufferType.NORMAL);
 
         return v;
     }
@@ -109,7 +117,7 @@ public class Entry {
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(v, getRollDescriptor(), Snackbar.LENGTH_INDEFINITE).setAction(getActionDescriptor(), (_rollable) ? new View.OnClickListener() {
+                Snackbar.make(v, getRollDescriptor(), Snackbar.LENGTH_INDEFINITE).setAction(getActionDescriptor(), (pRollable) ? new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Log.i("SnackRoll", "The user has issued a roll!");
@@ -136,7 +144,7 @@ public class Entry {
 
     protected int _roll()
     {
-        if (!_rollable)
+        if (!pRollable)
             return 0;
 
         Log.d("Roll", "Is rollable.");
@@ -147,17 +155,17 @@ public class Entry {
 
         Random rng = new Random();
         int roll = 0;
-        for (int i = 0; i < _modifier; i++)
+        for (int i = 0; i < pCoefficient; i++)
         {
-            int thisdie = rng.nextInt(_die) + 1; // 1 -> _die
+            int thisdie = rng.nextInt(pDie) + 1; // 1 -> pDie
 
             // todo: check for critical success.
 
             roll += thisdie;
             logmessage.append(String.format(Locale.US, "%d, ", thisdie));
         }
-        logmessage.append(String.format(Locale.US,"+ %d", _constant));
-        roll += _constant;
+        logmessage.append(String.format(Locale.US,"+ %d", pConstant));
+        roll += pConstant;
 
         logmessage.append(" = ");
         logmessage.append(roll);

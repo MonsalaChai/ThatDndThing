@@ -62,6 +62,8 @@ public class TabDetailFragment extends Fragment {
                         "    \"constant\":3,\n" +
                         "    \"label\":\"Potion of Potioning\",\n" +
                         "    \"typeid\":1,\n" +
+                        "    \"desc\" : \"Does some healing stuff with " +
+                        "some healing things to make you feel healed...-y.\"," +
                         "    \"item\" : {\n" +
                         "        \"weight\":150,\n" +
                         "        \"durability\":10,\n" +
