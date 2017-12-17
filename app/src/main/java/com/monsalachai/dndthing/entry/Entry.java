@@ -33,63 +33,63 @@ public class Entry {
     }
 
     //  Note: <modifier>d<die> + <constant>
-    private boolean pRollable;
-    private boolean pCritable;
-    private int pDie;
-    private int pCoefficient;
-    private int pConstant;
-    private String pName;
-    private String pDescription;
+    private boolean mRollable;
+    private boolean mCritable;
+    private int mDie;
+    private int mCoefficient;
+    private int mConstant;
+    private String mName;
+    private String mDescription;
 
     Entry() {
         // Default constructor.
-        pRollable    = false;
-        pCritable    = false;
-        pDie         = 0;
-        pCoefficient = 1;
-        pConstant    = 0;
-        pName        = App.getGlobalContext().getResources().getString(R.string.unknown_entry);
-        pDescription = App.getGlobalContext().getResources().getString(R.string.unused_longdesc);
+        mRollable = false;
+        mCritable = false;
+        mDie = 0;
+        mCoefficient = 1;
+        mConstant = 0;
+        mName = App.getGlobalContext().getResources().getString(R.string.unknown_entry);
+        mDescription = App.getGlobalContext().getResources().getString(R.string.unused_longdesc);
     }
 
     Entry(JsonObject json) {
-        pRollable    = safeGet(json, "rollable", false);
-        pCritable    = safeGet(json, "critable", false);
-        pDie         = safeGet(json, "die", 20);
-        pConstant    = safeGet(json, "constant", 0);
-        pCoefficient = safeGet(json, "coefficient", 1);
-        pName        = safeGet(json, "label", App.getGlobalContext().getResources().getString(R.string.unknown_entry));
-        pDescription = safeGet(json, "desc", App.getGlobalContext().getResources().getString(R.string.unused_longdesc));
+        mRollable = safeGet(json, "rollable", false);
+        mCritable = safeGet(json, "critable", false);
+        mDie = safeGet(json, "die", 20);
+        mConstant = safeGet(json, "constant", 0);
+        mCoefficient = safeGet(json, "coefficient", 1);
+        mName = safeGet(json, "label", App.getGlobalContext().getResources().getString(R.string.unknown_entry));
+        mDescription = safeGet(json, "desc", App.getGlobalContext().getResources().getString(R.string.unused_longdesc));
     }
 
     Entry(String raw) {
         JsonObject json = new JsonParser().parse(raw).getAsJsonObject();
-        pRollable    = safeGet(json, "rollable", false);
-        pCritable    = safeGet(json, "critable", false);
-        pDie         = safeGet(json, "die", 20);
-        pConstant    = safeGet(json, "constant", 0);
-        pCoefficient = safeGet(json, "coefficient", 1);
-        pName        = safeGet(json, "label", App.getGlobalContext().getResources().getString(R.string.unknown_entry));
-        pDescription = safeGet(json, "desc", App.getGlobalContext().getResources().getString(R.string.unused_longdesc));
+        mRollable = safeGet(json, "rollable", false);
+        mCritable = safeGet(json, "critable", false);
+        mDie = safeGet(json, "die", 20);
+        mConstant = safeGet(json, "constant", 0);
+        mCoefficient = safeGet(json, "coefficient", 1);
+        mName = safeGet(json, "label", App.getGlobalContext().getResources().getString(R.string.unknown_entry));
+        mDescription = safeGet(json, "desc", App.getGlobalContext().getResources().getString(R.string.unused_longdesc));
     }
 
     public JsonObject serialize() {
         JsonObject json = new JsonObject();
 
-        json.add("rollable", new JsonPrimitive(pRollable));
-        json.add("die", new JsonPrimitive(pDie));
-        json.add("coefficient", new JsonPrimitive(pCoefficient));
-        json.add("constant", new JsonPrimitive(pConstant));
-        json.add("label", new JsonPrimitive(pName));
-        json.add("desc", new JsonPrimitive(pDescription));
+        json.add("rollable", new JsonPrimitive(mRollable));
+        json.add("die", new JsonPrimitive(mDie));
+        json.add("coefficient", new JsonPrimitive(mCoefficient));
+        json.add("constant", new JsonPrimitive(mConstant));
+        json.add("label", new JsonPrimitive(mName));
+        json.add("desc", new JsonPrimitive(mDescription));
 
         return json;
     }
 
-    public boolean canRoll() { return pRollable; }
-    public boolean canCrit() { return pCritable; }
-    public String getRollDescriptor() { return  (pRollable) ? String.format(Locale.US, "%dd%d+%d", pCoefficient, pDie, pConstant) : "Not Rollable";}
-    public String getLabel() { return pName;}
+    public boolean canRoll() { return mRollable; }
+    public boolean canCrit() { return mCritable; }
+    public String getRollDescriptor() { return  (mRollable) ? String.format(Locale.US, "%dd%d+%d", mCoefficient, mDie, mConstant) : "Not Rollable";}
+    public String getLabel() { return mName;}
     public String getActionDescriptor() { return "Roll!"; }
     public int performRoll() {
         return _roll();
@@ -107,7 +107,7 @@ public class Entry {
         TextView tv = v.findViewById(R.id.entry_label_tv);
         tv.setText(getLabel(), TextView.BufferType.NORMAL);
         tv = v.findViewById(R.id.entry_longdesc);
-        tv.setText(pDescription, TextView.BufferType.NORMAL);
+        tv.setText(mDescription, TextView.BufferType.NORMAL);
 
         return v;
     }
@@ -117,7 +117,7 @@ public class Entry {
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(v, getRollDescriptor(), Snackbar.LENGTH_INDEFINITE).setAction(getActionDescriptor(), (pRollable) ? new View.OnClickListener() {
+                Snackbar.make(v, getRollDescriptor(), Snackbar.LENGTH_INDEFINITE).setAction(getActionDescriptor(), (mRollable) ? new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Log.i("SnackRoll", "The user has issued a roll!");
@@ -144,7 +144,7 @@ public class Entry {
 
     protected int _roll()
     {
-        if (!pRollable)
+        if (!mRollable)
             return 0;
 
         Log.d("Roll", "Is rollable.");
@@ -155,17 +155,17 @@ public class Entry {
 
         Random rng = new Random();
         int roll = 0;
-        for (int i = 0; i < pCoefficient; i++)
+        for (int i = 0; i < mCoefficient; i++)
         {
-            int thisdie = rng.nextInt(pDie) + 1; // 1 -> pDie
+            int thisdie = rng.nextInt(mDie) + 1; // 1 -> mDie
 
             // todo: check for critical success.
 
             roll += thisdie;
             logmessage.append(String.format(Locale.US, "%d, ", thisdie));
         }
-        logmessage.append(String.format(Locale.US,"+ %d", pConstant));
-        roll += pConstant;
+        logmessage.append(String.format(Locale.US,"+ %d", mConstant));
+        roll += mConstant;
 
         logmessage.append(" = ");
         logmessage.append(roll);

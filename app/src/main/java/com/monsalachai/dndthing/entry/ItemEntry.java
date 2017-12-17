@@ -8,20 +8,20 @@ import com.google.gson.JsonParser;
  */
 
 public class ItemEntry extends Entry {
-    private int pCount;
-    private int pWeight;
-    private int pDurability;
-    private boolean pConsumable;
-    private boolean pWondrous;
+    private int mCount;
+    private int mWeight;
+    private int mDurability;
+    private boolean mConsumable;
+    private boolean mWondrous;
 
     public ItemEntry()
     {
         super();
-        pCount = 1;
-        pWeight = 1;
-        pDurability = 1;
-        pConsumable = false;
-        pWondrous = false;
+        mCount = 1;
+        mWeight = 1;
+        mDurability = 1;
+        mConsumable = false;
+        mWondrous = false;
     }
 
     public ItemEntry(JsonObject json)
@@ -30,11 +30,11 @@ public class ItemEntry extends Entry {
         json = safeGet(json, "item");
         if (json == null) throw new MalformedEntryException("Malformed ID");
 
-        pCount = safeGet(json, "count", 1);
-        pWeight = safeGet(json, "weight", 1);
-        pDurability = safeGet(json, "durability", 1);
-        pConsumable = safeGet(json, "consumable", false);
-        pWondrous = safeGet(json, "wondrous", false);
+        mCount = safeGet(json, "count", 1);
+        mWeight = safeGet(json, "weight", 1);
+        mDurability = safeGet(json, "durability", 1);
+        mConsumable = safeGet(json, "consumable", false);
+        mWondrous = safeGet(json, "wondrous", false);
     }
 
     public ItemEntry(String raw)
@@ -44,11 +44,11 @@ public class ItemEntry extends Entry {
         json = safeGet(json, "item");
         if (json == null) throw new MalformedEntryException("Malformed ID");
 
-        pCount = safeGet(json, "count", 1);
-        pWeight = safeGet(json, "weight", 1);
-        pDurability = safeGet(json, "durability", 1);
-        pConsumable = safeGet(json, "consumable", false);
-        pWondrous = safeGet(json, "wondrous", false);
+        mCount = safeGet(json, "count", 1);
+        mWeight = safeGet(json, "weight", 1);
+        mDurability = safeGet(json, "durability", 1);
+        mConsumable = safeGet(json, "consumable", false);
+        mWondrous = safeGet(json, "wondrous", false);
     }
 
     @Override
@@ -60,11 +60,11 @@ public class ItemEntry extends Entry {
         JsonObject json = new JsonObject();
         master.add("item", json);
 
-        json.addProperty("count", pCount);
-        json.addProperty("weight", pWeight);
-        json.addProperty("durability", pDurability);
-        json.addProperty("consumable", pConsumable);
-        json.addProperty("wondrous", pWondrous);
+        json.addProperty("count", mCount);
+        json.addProperty("weight", mWeight);
+        json.addProperty("durability", mDurability);
+        json.addProperty("consumable", mConsumable);
+        json.addProperty("wondrous", mWondrous);
 
         return master;
     }
@@ -73,12 +73,12 @@ public class ItemEntry extends Entry {
     public int performRoll()
     {
         int roll = _roll();
-        if (pConsumable && canRoll()) pCount -= 1;
+        if (mConsumable && canRoll()) mCount -= 1;
         return roll;
     }
 
-    public int getWeight() { return pWeight; }
-    public int getDurabililty() { return pDurability; }
-    public boolean isConsumable() { return pConsumable; }
-    public boolean isWondrous() { return pWondrous; }
+    public int getWeight() { return mWeight; }
+    public int getDurabililty() { return mDurability; }
+    public boolean isConsumable() { return mConsumable; }
+    public boolean isWondrous() { return mWondrous; }
 }

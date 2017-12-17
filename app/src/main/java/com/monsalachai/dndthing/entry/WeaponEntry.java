@@ -16,19 +16,19 @@ public class WeaponEntry extends ItemEntry {
         Melee, Ranged, Magical, Other
     }
 
-    private WeaponType pType;
-    private DamageType pDamageType;
-    private int pAmmoCount;
-    private String pAmmoDesc;
+    private WeaponType mType;
+    private DamageType mDamageType;
+    private int mAmmoCount;
+    private String mAmmoDesc;
 
     public WeaponEntry()
     {
         super();
 
-        pType = WeaponType.Other;
-        pDamageType = DamageType.Other;
-        pAmmoCount = 0;
-        pAmmoDesc = "None";
+        mType = WeaponType.Other;
+        mDamageType = DamageType.Other;
+        mAmmoCount = 0;
+        mAmmoDesc = "None";
     }
 
     public WeaponEntry(JsonObject json)
@@ -37,10 +37,10 @@ public class WeaponEntry extends ItemEntry {
         try { json = json.getAsJsonObject("weapon"); }
         catch (JsonParseException e) { throw new MalformedEntryException("Malformed ID"); }
 
-        pType = _convertStringToWType(safeGet(json, "type", "??"));
-        pDamageType = _convertStringToDtype(safeGet(json, "damageType", "??"));
-        pAmmoCount = safeGet(json, "ammoCount", 0);
-        pAmmoDesc = safeGet(json, "ammoType", "None");
+        mType = _convertStringToWType(safeGet(json, "type", "??"));
+        mDamageType = _convertStringToDtype(safeGet(json, "damageType", "??"));
+        mAmmoCount = safeGet(json, "ammoCount", 0);
+        mAmmoDesc = safeGet(json, "ammoType", "None");
     }
 
     public WeaponEntry(String raw)
@@ -51,10 +51,10 @@ public class WeaponEntry extends ItemEntry {
         catch (JsonParseException e) { throw new MalformedEntryException("Malformed ID"); }
 
 
-        pType = _convertStringToWType(safeGet(json, "type", "??"));
-        pDamageType = _convertStringToDtype(safeGet(json, "damageType", "??"));
-        pAmmoCount = safeGet(json, "ammoCount", 0);
-        pAmmoDesc = safeGet(json, "ammoType", "None");
+        mType = _convertStringToWType(safeGet(json, "type", "??"));
+        mDamageType = _convertStringToDtype(safeGet(json, "damageType", "??"));
+        mAmmoCount = safeGet(json, "ammoCount", 0);
+        mAmmoDesc = safeGet(json, "ammoType", "None");
     }
 
     @Override
@@ -65,10 +65,10 @@ public class WeaponEntry extends ItemEntry {
 
         master.addProperty("typeid", 2);
         master.add("weapon", json);
-        json.addProperty("type", _invertType(pType));
-        json.addProperty("damageType", _invertDamageType(pDamageType));
-        json.addProperty("ammoCount", pAmmoCount);
-        json.addProperty("ammoType", pAmmoDesc);
+        json.addProperty("type", _invertType(mType));
+        json.addProperty("damageType", _invertDamageType(mDamageType));
+        json.addProperty("ammoCount", mAmmoCount);
+        json.addProperty("ammoType", mAmmoDesc);
 
         return master;
     }
@@ -78,16 +78,16 @@ public class WeaponEntry extends ItemEntry {
     {
         int roll = _roll();
         if (isConsumable() && canRoll())
-            pAmmoCount -= 1;
+            mAmmoCount -= 1;
         return roll;
     }
 
-    public WeaponType getType() { return pType; }
-    public WeaponType getWeaponType() { return pType; }
-    public DamageType getDamageType() { return pDamageType; }
-    public boolean isRanged() { return pType == WeaponType.Ranged; }
-    public boolean isMelee() { return pType == WeaponType.Melee; }
-    public boolean isMagical() { return pType == WeaponType.Magical; }
+    public WeaponType getType() { return mType; }
+    public WeaponType getWeaponType() { return mType; }
+    public DamageType getDamageType() { return mDamageType; }
+    public boolean isRanged() { return mType == WeaponType.Ranged; }
+    public boolean isMelee() { return mType == WeaponType.Melee; }
+    public boolean isMagical() { return mType == WeaponType.Magical; }
 
     public String getWeaponDescriptor()
     {
@@ -102,7 +102,7 @@ public class WeaponEntry extends ItemEntry {
     protected String getTypeDescriptor()
     {
         // ever feel like doing things the hard way because you can?
-        return (pDamageType == getDamageType().Slash) ? "Slashing" : (pDamageType == DamageType.Pierce) ? "Piercing" : (pDamageType == DamageType.Blunt) ? "Bludgeoning" : "???";
+        return (mDamageType == getDamageType().Slash) ? "Slashing" : (mDamageType == DamageType.Pierce) ? "Piercing" : (mDamageType == DamageType.Blunt) ? "Bludgeoning" : "???";
     }
 
     protected WeaponType _convertStringToWType(String param)
