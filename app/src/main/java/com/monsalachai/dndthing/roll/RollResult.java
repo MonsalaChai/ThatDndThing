@@ -49,4 +49,25 @@ public class RollResult implements Iterable<DieCast> {
     }
 
     public int getInitial() { return mInitial; }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder("(");
+
+        // hijack iterator for better control on string joins.
+        Iterator<DieCast> iter = mCasts.iterator();
+        while (iter.hasNext())
+        {
+            DieCast dc = iter.next();
+            builder.append("d").append(dc.getDieSize())
+                    .append("->").append(dc.getDieCast());
+            if (iter.hasNext())
+                builder.append(", ");
+        }
+
+        builder.append(") + ").append(mInitial).append("\n>>> ").append(getResult());
+
+        return builder.toString();
+    }
 }

@@ -138,21 +138,11 @@ public class Entry {
                         RollResult rr = roll();
                         Log.i("SnackRoll", "The user rolled: " + rr.getResult());
 
-                        StringBuilder messageBuilder = new StringBuilder();
-                        for (DieCast dc : rr){
-                            messageBuilder.append("d");
-                            messageBuilder.append(dc.getDieSize());
-                            messageBuilder.append("->");
-                            messageBuilder.append(dc.getDieCast());
-                            messageBuilder.append(", ");
-                        }
 
-                        messageBuilder.append("\n=> ");
-                        messageBuilder.append(rr.getResult());
 
                         // create a dialog:
                         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                        builder.setMessage(messageBuilder.toString()).setTitle("Roll Result").setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                        builder.setMessage(rr.toString()).setTitle("Roll Result").setPositiveButton("Okay", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 Log.i("dlg+b", "They pressed the okay button.");
