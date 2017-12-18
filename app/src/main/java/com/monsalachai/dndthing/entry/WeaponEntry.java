@@ -3,6 +3,7 @@ package com.monsalachai.dndthing.entry;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.monsalachai.dndthing.roll.RollResult;
 
 /**
  * Created by mesalu on 12/9/17.
@@ -74,12 +75,12 @@ public class WeaponEntry extends ItemEntry {
     }
 
     @Override
-    public int performRoll()
+    public RollResult onRoll(RollResult res)
     {
-        int roll = _roll();
+        res = super.onRoll(res);
         if (isConsumable() && canRoll())
             mAmmoCount -= 1;
-        return roll;
+        return res;
     }
 
     public WeaponType getType() { return mType; }

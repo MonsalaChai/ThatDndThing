@@ -15,6 +15,9 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.monsalachai.dndthing.App;
 import com.monsalachai.dndthing.R;
+import com.monsalachai.dndthing.roll.DieCast;
+import com.monsalachai.dndthing.roll.Roll;
+import com.monsalachai.dndthing.roll.RollResult;
 
 import java.util.Locale;
 import java.util.Random;
@@ -91,8 +94,19 @@ public class Entry {
     public String getRollDescriptor() { return  (mRollable) ? String.format(Locale.US, "%dd%d+%d", mCoefficient, mDie, mConstant) : "Not Rollable";}
     public String getLabel() { return mName;}
     public String getActionDescriptor() { return "Roll!"; }
-    public int performRoll() {
-        return _roll();
+
+
+    public RollResult roll()
+    {
+        RollResult result = Roll.makeRoll(mCoefficient, mDie, mConstant);
+        result = onRoll(result);
+        return result;
+    }
+
+    // override this to hook into a roll event rather than overriding roll().
+    protected RollResult onRoll(RollResult carryover)
+    {
+        return carryover;
     }
 
     public View generateView(Context context)
@@ -121,12 +135,24 @@ public class Entry {
                     @Override
                     public void onClick(View view) {
                         Log.i("SnackRoll", "The user has issued a roll!");
-                        int roll = performRoll();
-                        Log.i("SnackRoll", "The user rolled: " + roll);
+                        RollResult rr = roll();
+                        Log.i("SnackRoll", "The user rolled: " + rr.getResult());
+
+                        StringBuilder messageBuilder = new StringBuilder();
+                        for (DieCast dc : rr){
+                            messageBuilder.append("d");
+                            messageBuilder.append(dc.getDieSize());
+                            messageBuilder.append("->");
+                            messageBuilder.append(dc.getDieCast());
+                            messageBuilder.append(", ");
+                        }
+
+                        messageBuilder.append("\n=> ");
+                        messageBuilder.append(rr.getResult());
 
                         // create a dialog:
                         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                        builder.setMessage("You rolled: " + roll).setTitle("Roll Result").setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                        builder.setMessage(messageBuilder.toString()).setTitle("Roll Result").setPositiveButton("Okay", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 Log.i("dlg+b", "They pressed the okay button.");
@@ -142,36 +168,6 @@ public class Entry {
         });
     }
 
-    protected int _roll()
-    {
-        if (!mRollable)
-            return 0;
-
-        Log.d("Roll", "Is rollable.");
-
-        StringBuilder logmessage = new StringBuilder();
-        logmessage.append("Rolled: ");
-        logmessage.append(getRollDescriptor()).append(" -> ");
-
-        Random rng = new Random();
-        int roll = 0;
-        for (int i = 0; i < mCoefficient; i++)
-        {
-            int thisdie = rng.nextInt(mDie) + 1; // 1 -> mDie
-
-            // todo: check for critical success.
-
-            roll += thisdie;
-            logmessage.append(String.format(Locale.US, "%d, ", thisdie));
-        }
-        logmessage.append(String.format(Locale.US,"+ %d", mConstant));
-        roll += mConstant;
-
-        logmessage.append(" = ");
-        logmessage.append(roll);
-        Log.d("Roll", logmessage.toString());
-        return roll;
-    }
 
     protected JsonObject safeGet(JsonObject json, String tag)
     {

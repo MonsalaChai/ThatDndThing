@@ -2,6 +2,7 @@ package com.monsalachai.dndthing.entry;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.monsalachai.dndthing.roll.RollResult;
 
 /**
  * Created by mesalu on 12/9/17.
@@ -70,11 +71,10 @@ public class ItemEntry extends Entry {
     }
 
     @Override
-    public int performRoll()
+    public RollResult onRoll(RollResult res)
     {
-        int roll = _roll();
         if (mConsumable && canRoll()) mCount -= 1;
-        return roll;
+        return res;
     }
 
     public int getWeight() { return mWeight; }

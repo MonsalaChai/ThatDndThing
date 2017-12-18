@@ -85,7 +85,7 @@ public class TabDetailFragment extends Fragment {
                 "    \"critable\" : true,\n" +
                 "    \"die\" : 12,\n" +
                 "    \"constant\" : 32,\n" +
-                "    \"modifier\" : 3,\n" +
+                "    \"coefficient\" : 3,\n" +
                 "    \"rollable\" : true,\n" +
                 "    \"label\" : \"Deathy Axe of Deathitude\", \n" +
                 "    \"weapon\" : {\n" +
