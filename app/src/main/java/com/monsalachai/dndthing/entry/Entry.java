@@ -50,7 +50,7 @@ public class Entry {
         mCoefficient = 1;
         mConstant = 0;
         mName = App.getGlobalContext().getResources().getString(R.string.unknown_entry);
-        mDescription = App.getGlobalContext().getResources().getString(R.string.unused_longdesc);
+        mDescription = App.getGlobalContext().getResources().getString(R.string.unused_long_desc);
     }
 
     Entry(JsonObject json) {
@@ -60,7 +60,7 @@ public class Entry {
         mConstant = safeGet(json, "constant", 0);
         mCoefficient = safeGet(json, "coefficient", 1);
         mName = safeGet(json, "label", App.getGlobalContext().getResources().getString(R.string.unknown_entry));
-        mDescription = safeGet(json, "desc", App.getGlobalContext().getResources().getString(R.string.unused_longdesc));
+        mDescription = safeGet(json, "desc", App.getGlobalContext().getResources().getString(R.string.unused_long_desc));
     }
 
     Entry(String raw) {
@@ -71,7 +71,7 @@ public class Entry {
         mConstant = safeGet(json, "constant", 0);
         mCoefficient = safeGet(json, "coefficient", 1);
         mName = safeGet(json, "label", App.getGlobalContext().getResources().getString(R.string.unknown_entry));
-        mDescription = safeGet(json, "desc", App.getGlobalContext().getResources().getString(R.string.unused_longdesc));
+        mDescription = safeGet(json, "desc", App.getGlobalContext().getResources().getString(R.string.unused_long_desc));
     }
 
     public JsonObject serialize() {

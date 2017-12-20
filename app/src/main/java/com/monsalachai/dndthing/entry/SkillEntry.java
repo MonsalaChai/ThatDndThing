@@ -14,9 +14,16 @@ import java.util.LinkedList;
 public class SkillEntry extends Entry {
     private class MiscSources
     {
-        public int mod;
-        public String text;
-        MiscSources(int modifier, String helptext) { mod = modifier; text = helptext;}
+        int mod;
+        String name;
+        String text;
+
+        MiscSources(int modifier, String name, String helptext)
+        {
+            mod = modifier;
+            this.name = name;
+            text = helptext;
+        }
     }
 
     private int mMiscMod;

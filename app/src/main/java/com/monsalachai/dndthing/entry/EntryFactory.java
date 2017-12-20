@@ -4,9 +4,13 @@ import android.util.Log;
 
 import java.lang.Math;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.monsalachai.dndthing.App;
+import com.monsalachai.dndthing.R;
 
 /**
  * Created by mesalu on 12/9/17.
@@ -359,11 +363,88 @@ public class EntryFactory {
         }
 
         /**
+         * Sets this SkillEntry to reflect a class skill
+         * @return this
+         */
+        public EntryBuilder setSkillClassSkill()
+        {
+            setTypeSkill();
+            mBuildSite.getAsJsonObject("skill").addProperty("classSkill", true);
+            return this;
+        }
+
+        /**
+         * Sets this Skill as a class Skill, meaning that if a single rank is put into the skill
+         * the class supply a bonus 3 points.
+         * @param flag the state to set classSkill to.
+         * @return this
+         */
+        public EntryBuilder setSkillClassSkill(boolean flag)
+        {
+            setTypeSkill();
+            mBuildSite.getAsJsonObject("skill").addProperty("classSkill", flag);
+            return this;
+        }
+
+        /**
+         * Assigns a total rank value to the skill.
+         * This value can vary from the sum of source points.
+         *
+         * @param value the total number of ranks.
+         * @return this
+         */
+        public EntryBuilder addRankValue(int value)
+        {
+            setTypeSkill();
+            mBuildSite.getAsJsonObject("skill").addProperty("ranks", value);
+            return this;
+        }
+
+        public EntryBuilder addSkillSource(int value)
+        {
+            return addSkillSource(value,
+                    App.getGlobalContext().getResources().getString(R.string.unknown_entry),
+                    App.getGlobalContext().getResources().getString(R.string.unused_skill_source_desc));
+        }
+
+        public EntryBuilder addSkillSource(int value, String label)
+        {
+            return addSkillSource(value, label,
+                    App.getGlobalContext().getResources().getString(R.string.unused_skill_source_desc));
+        }
+
+        /**
+         * Add a source to the skill entry.
+         * The source details the point value (how much is being added/removed) from the skill result
+         * what the source is called (ex, a feat name)
+         * and a short description if available of what the source is.
+         * @param value the value (can be negative) associated to the source.
+         * @param label what the source's name is
+         * @param description description of the skill source
+         * @return this
+         */
+        public EntryBuilder addSkillSource(int value, String label, String description)
+        {
+            setTypeSkill();
+            noOverwrite(mBuildSite.getAsJsonObject("skill"), "miscSources", new JsonArray());
+            JsonArray array = mBuildSite.getAsJsonObject("skill").getAsJsonArray("miscSources");
+            JsonObject object = new JsonObject();
+
+            object.addProperty("name", label);
+            object.addProperty("mod", value);
+            object.addProperty("text", description);
+
+            array.add(object);
+
+            return this;
+        }
+
+        /**
          * Adds the given object to buildsite if the action would not otherwise overwrite data.
          * @param label the label in mBuildSite to add to.
-         * @param object the JsonObject to add.
+         * @param object the JsonElement to add.
          */
-        private void noOverwrite(String label, JsonObject object)
+        private void noOverwrite(String label, JsonElement object)
         {
             noOverwrite(mBuildSite, label, object);
         }
@@ -373,7 +454,7 @@ public class EntryFactory {
          * @param label the label in json to add in as.
          * @param object the object to add to json.
          */
-        private void noOverwrite(JsonObject json, String label, JsonObject object)
+        private void noOverwrite(JsonObject json, String label, JsonElement object)
         {
             try
             {
