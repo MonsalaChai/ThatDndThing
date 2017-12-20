@@ -43,7 +43,7 @@ public class SkillEntry extends Entry {
     public SkillEntry(JsonObject json)
     {
         super(json);
-        json = safeGet(json, "skills");
+        json = safeGet(json, "skill");
         if (json == null) throw new MalformedEntryException("Malformed ID");
 
         mMiscMod = 0;
@@ -55,7 +55,9 @@ public class SkillEntry extends Entry {
         for (JsonElement js : json.getAsJsonArray("miscSources"))
         {
             JsonObject jso = js.getAsJsonObject();
-            MiscSources ms = new MiscSources(jso.get("mod").getAsInt(), jso.get("text").getAsString());
+            MiscSources ms = new MiscSources(jso.get("mod").getAsInt(),
+                    jso.get("name").getAsString(),
+                    jso.get("text").getAsString());
             mMiscMod += ms.mod;
             mSources.add(ms);
             // todo, look into using Gson object here instead.
@@ -67,7 +69,7 @@ public class SkillEntry extends Entry {
         super(raw);
         JsonObject json = null;
         try {
-            json = new JsonParser().parse(raw).getAsJsonObject().getAsJsonObject("skills");
+            json = new JsonParser().parse(raw).getAsJsonObject().getAsJsonObject("skill");
         }
         catch (com.google.gson.JsonParseException e) { throw new MalformedEntryException("Malformed ID"); }
 
@@ -80,7 +82,9 @@ public class SkillEntry extends Entry {
         for (JsonElement js : json.getAsJsonArray("sources"))
         {
             JsonObject jso = js.getAsJsonObject();
-            MiscSources ms = new MiscSources(jso.get("mod").getAsInt(), jso.get("text").getAsString());
+            MiscSources ms = new MiscSources(jso.get("mod").getAsInt(),
+                    jso.get("name").getAsString(),
+                    jso.get("text").getAsString());
             mMiscMod += ms.mod;
             mSources.add(ms);
             // todo, look into using Gson object here instead.

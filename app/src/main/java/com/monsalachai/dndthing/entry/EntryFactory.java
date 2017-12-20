@@ -18,7 +18,7 @@ import com.monsalachai.dndthing.R;
 
 public class EntryFactory {
 
-    public class EntryBuilder {
+    public static class EntryBuilder {
         protected JsonObject mBuildSite;
 
         public EntryBuilder() {
@@ -32,6 +32,7 @@ public class EntryFactory {
          * @return a new Entry object.
          */
         public Entry create() {
+            Log.i("EBuilder", mBuildSite.toString());
             return EntryFactory.deflate(mBuildSite);
         }
 
@@ -456,15 +457,8 @@ public class EntryFactory {
          */
         private void noOverwrite(JsonObject json, String label, JsonElement object)
         {
-            try
-            {
-                json.get(label);
-            }
-            catch (JsonParseException e)
-            {
-                // actually add object
+            if (json.get(label) == null)
                 json.add(label, object);
-            }
         }
 
         /**
@@ -475,14 +469,8 @@ public class EntryFactory {
          */
         private void noOverwrite(JsonObject json, String label)
         {
-            try
-            {
-                json.get(label);
-            }
-            catch (JsonParseException e)
-            {
+            if (json.get(label) == null)
                 json.add(label, new JsonObject());
-            }
         }
 
         /**

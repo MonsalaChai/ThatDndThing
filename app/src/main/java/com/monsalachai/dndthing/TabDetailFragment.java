@@ -1,6 +1,5 @@
 package com.monsalachai.dndthing;
 
-import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
@@ -10,11 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.monsalachai.dndthing.dummy.DummyContent;
+import com.monsalachai.dndthing.entry.Entry;
 import com.monsalachai.dndthing.entry.EntryFactory;
+import com.monsalachai.dndthing.entry.EntryFactory.EntryBuilder;
 import com.monsalachai.dndthing.entry.ItemEntry;
+import com.monsalachai.dndthing.entry.SkillEntry;
 import com.monsalachai.dndthing.entry.WeaponEntry;
 
 /**
@@ -102,6 +102,23 @@ public class TabDetailFragment extends Fragment {
         v = we.generateView(getContext());
         v.setBackground(drawable);
         rootView.addView(v);
+
+
+        // and now for something completely different.
+        EntryBuilder builder = new EntryBuilder();
+        builder.setTypeSkill().addLabel("Skill of deft Skillfulness").addSkillSource(5,
+                "SkillfulFeat",
+                "Your feet are so skillful you got a feat.")
+                .addDescription("You have very skillful feet.")
+                .setRollable(true).addRollDie(20).setCritable(true);
+        SkillEntry se = (SkillEntry)builder.create();
+        Log.i("EBuilder", se.serialize().toString());
+
+        v = se.generateView(getContext());
+        v.setBackground(drawable);
+
+        rootView.addView(v);
+
         return rootView;
     }
 }
