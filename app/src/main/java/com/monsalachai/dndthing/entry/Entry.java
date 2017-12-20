@@ -15,12 +15,10 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.monsalachai.dndthing.App;
 import com.monsalachai.dndthing.R;
-import com.monsalachai.dndthing.roll.DieCast;
 import com.monsalachai.dndthing.roll.Roll;
 import com.monsalachai.dndthing.roll.RollResult;
 
 import java.util.Locale;
-import java.util.Random;
 
 /**
  * Created by mesalu on 12/8/17.
