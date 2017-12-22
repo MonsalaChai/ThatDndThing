@@ -80,32 +80,21 @@ public class TabDetailFragment extends Fragment {
         v.setBackground(drawable);
         rootView.addView(v);
 
-        raw = "{\n" +
-                "    \"typeid\" : 2,\n" +
-                "    \"critable\" : true,\n" +
-                "    \"die\" : 12,\n" +
-                "    \"constant\" : 32,\n" +
-                "    \"coefficient\" : 3,\n" +
-                "    \"rollable\" : true,\n" +
-                "    \"label\" : \"Deathy Axe of Deathitude\", \n" +
-                "    \"weapon\" : {\n" +
-                "        \"type\" : \"magical\",\n" +
-                "        \"damageType\" : \"Slashing\"\n" +
-                "    },\n" +
-                "    \"item\" : {\n" +
-                "        \"count\" : 1,\n" +
-                "        \"durability\" : 1337\n" +
-                "    }\n" +
-                "}";
+        EntryBuilder builder = new EntryBuilder();
+        builder.setTypeWeapon().setRollable(true).setCritable(true);
+        builder.addRollDie(12).addConstantValue(32).addRollCoefficient(3);
+        builder.addLabel("Deathy Axe of Deathitude");
+        builder.addDescription("The deadly axe that causes death.");
+        builder.setWeaponSlashing().setWeaponMelee().addItemCount(1);
+        builder.addItemDurability(1337);
+        builder.addItemWeight(15);
 
-        WeaponEntry we = (WeaponEntry) EntryFactory.deflate(raw);
+        WeaponEntry we = (WeaponEntry) builder.create();
         v = we.generateView(getContext());
         v.setBackground(drawable);
         rootView.addView(v);
 
-
-        // and now for something completely different.
-        EntryBuilder builder = new EntryBuilder();
+        builder.clear();
         builder.setTypeSkill().addLabel("Skill of deft Skillfulness").addSkillSource(5,
                 "SkillfulFeat",
                 "Your feet are so skillful you got a feat.")
