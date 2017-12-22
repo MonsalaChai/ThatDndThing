@@ -37,6 +37,16 @@ public class EntryFactory {
         }
 
         /**
+         * Clears the production state of the builder
+         * @return this
+         */
+        public EntryBuilder clear()
+        {
+            mBuildSite = new JsonObject();
+            return this;
+        }
+
+        /**
          * Add the die size to the entry.
          * if rollable is not already set, it will be set
          * as a byproduct of this call.
@@ -63,7 +73,7 @@ public class EntryFactory {
          */
         public EntryBuilder addConstantValue(int value) {
             mBuildSite.addProperty("rollable", true);
-            mBuildSite.addProperty("consant", Math.abs(value));
+            mBuildSite.addProperty("constant", Math.abs(value));
             return this;
         }
 
