@@ -1,7 +1,6 @@
 package com.monsalachai.dndthing;
 
 import android.graphics.drawable.Drawable;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -10,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.monsalachai.dndthing.entry.Entry;
 import com.monsalachai.dndthing.entry.EntryFactory;
 import com.monsalachai.dndthing.entry.EntryFactory.EntryBuilder;
 import com.monsalachai.dndthing.entry.ItemEntry;
@@ -70,22 +68,18 @@ public class TabDetailFragment extends Fragment {
         ItemEntry ie = (ItemEntry) EntryFactory.deflate(raw);
         View v = ie.generateView(getContext());
 
-        Drawable drawable = getActivity().getDrawable(R.drawable.tmpback);
-        v.setBackground(drawable);
         rootView.addView(v);
 
         EntryBuilder builder = new EntryBuilder();
-        builder.setTypeWeapon().setRollable(true).setCritable(true);
-        builder.addRollDie(12).addConstantValue(32).addRollCoefficient(3);
-        builder.addLabel("Deathy Axe of Deathitude");
-        builder.addDescription("The deadly axe that causes death.");
-        builder.setWeaponSlashing().setWeaponMelee().addItemCount(1);
-        builder.addItemDurability(1337);
-        builder.addItemWeight(15);
+        builder.setTypeWeapon().setRollable(true).setCritable(true)
+                .addRollDie(12).addConstantValue(32).addRollCoefficient(3)
+                .addLabel("Deathy Axe of Deathitude")
+                .addDescription("The deadly axe that causes death.")
+                .setWeaponSlashing().setWeaponMelee().addItemCount(1)
+                .addItemDurability(1337).addItemWeight(15);
 
         WeaponEntry we = (WeaponEntry) builder.create();
         v = we.generateView(getContext());
-        v.setBackground(drawable);
         rootView.addView(v);
 
         builder.clear();
@@ -98,14 +92,13 @@ public class TabDetailFragment extends Fragment {
         SkillEntry se = (SkillEntry)builder.create();
 
         v = se.generateView(getContext());
-        v.setBackground(drawable);
+
 
         rootView.addView(v);
 
         for (int i = 0; i < 6; i++)
         {
             v = builder.create().generateView(getContext());
-            v.setBackground(drawable);
             rootView.addView(v);
         }
         return rootView;

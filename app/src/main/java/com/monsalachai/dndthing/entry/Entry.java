@@ -121,7 +121,21 @@ public class Entry {
         tv = v.findViewById(R.id.entry_longdesc);
         tv.setText(mDescription, TextView.BufferType.NORMAL);
 
+        setViewBackground(v);
+
         return v;
+    }
+
+    /**
+     * This method sets the background for the Entry View tile.
+     * It is invoked by the base level generateView juuuust before returning.
+     * You will need to call this directly if you override generateView
+     * @param v the View to assign a background to.
+     */
+    protected void setViewBackground(final View v)
+    {
+        //getActivity().getDrawable(R.drawable.background_generic_entry);
+        v.setBackground(App.getGlobalContext().getDrawable(R.drawable.background_generic_entry));
     }
 
     protected void setCustomOnClickListener(final View v, final Context context)
