@@ -43,7 +43,9 @@ public class TabDetailActivity extends AppCompatActivity {
             // using a fragment transaction.
             Bundle arguments = new Bundle();
 
-            arguments.putString("title", "The Other Thing!");
+
+
+            arguments.putString("title", getIntent().getStringExtra("title"));
 
             TabDetailFragment fragment = new TabDetailFragment();
             fragment.setArguments(arguments);

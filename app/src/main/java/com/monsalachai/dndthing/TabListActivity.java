@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.monsalachai.dndthing.dummy.DummyContent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -59,9 +60,72 @@ public class TabListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+        //recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+        recyclerView.setAdapter(new DndTabAdapter());
+    }
+    public class DndTabAdapter extends RecyclerView.Adapter<DndTabAdapter.ViewHolder>
+    {
+        List<String> mTitles;
+        DndTabAdapter()
+        {
+            mTitles = new ArrayList<>();
+            mTitles.add("Character");
+            mTitles.add("Inventory");
+            mTitles.add("Combat");
+            mTitles.add("Spells");
+            mTitles.add("Skills");
+            mTitles.add("Feats");
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.tab_list_content, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, final int position) {
+            holder.mTitleView.setText(mTitles.get(position));
+            holder.mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mTwoPane) {
+                        Bundle arguments = new Bundle();
+                        arguments.putString("title", mTitles.get(position));
+                        TabDetailFragment fragment = new TabDetailFragment();
+                        fragment.setArguments(arguments);
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.tab_detail_container, fragment)
+                                .commit();
+                    } else {
+                        Context context = v.getContext();
+                        Intent intent = new Intent(context, TabDetailActivity.class);
+                        intent.putExtra("title", mTitles.get(position));
+
+                        context.startActivity(intent);
+                    }
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return mTitles.size();
+        }
+
+        class ViewHolder extends RecyclerView.ViewHolder {
+            public final View mView;
+            public final TextView mTitleView;
+            public ViewHolder(View view) {
+                super(view);
+                mView = view;
+                mTitleView = view.findViewById(R.id.content);
+            }
+        }
     }
 
+    /*
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
@@ -130,4 +194,5 @@ public class TabListActivity extends AppCompatActivity {
             }
         }
     }
+    */
 }
