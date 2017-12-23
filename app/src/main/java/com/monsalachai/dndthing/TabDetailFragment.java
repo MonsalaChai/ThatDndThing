@@ -40,14 +40,8 @@ public class TabDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments().containsKey("title")) {
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout);
-            if (appBarLayout != null)
-                appBarLayout.setTitle(getArguments().getString("title"));
-        }
+        // Find database content based on arguments["content"]
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -99,9 +93,9 @@ public class TabDetailFragment extends Fragment {
                 "SkillfulFeat",
                 "Your feet are so skillful you got a feat.")
                 .addDescription("You have very skillful feet.")
-                .setRollable(true).addRollDie(20).setCritable(true);
+                .setRollable(true).addRollDie(20).setCritable(true)
+                .addConstantValue(5);
         SkillEntry se = (SkillEntry)builder.create();
-        Log.i("EBuilder", se.serialize().toString());
 
         v = se.generateView(getContext());
         v.setBackground(drawable);
