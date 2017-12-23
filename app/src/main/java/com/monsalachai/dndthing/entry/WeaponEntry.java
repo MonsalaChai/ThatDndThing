@@ -3,6 +3,7 @@ package com.monsalachai.dndthing.entry;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.monsalachai.dndthing.roll.RollResult;
 
 /**
  * Created by mesalu on 12/9/17.
@@ -16,34 +17,34 @@ public class WeaponEntry extends ItemEntry {
         Melee, Ranged, Magical, Other
     }
 
-    private WeaponType _type;
-    private DamageType _damagetype;
-    private int    _ammo;
-    private String _ammotype;
+    private WeaponType mType;
+    private DamageType mDamageType;
+    private int mAmmoCount;
+    private String mAmmoDesc;
 
     public WeaponEntry()
     {
         super();
 
-        _type = WeaponType.Other;
-        _damagetype = DamageType.Other;
-        _ammo = 0;
-        _ammotype = "None";
+        mType = WeaponType.Other;
+        mDamageType = DamageType.Other;
+        mAmmoCount = 0;
+        mAmmoDesc = "None";
     }
 
-    public WeaponEntry(JsonObject json) throws  MalformedEntryException
+    public WeaponEntry(JsonObject json)
     {
         super(json);
         try { json = json.getAsJsonObject("weapon"); }
         catch (JsonParseException e) { throw new MalformedEntryException("Malformed ID"); }
 
-        _type       = _convertStringToWType(safeGet(json, "weaponType", "??"));
-        _damagetype = _convertStringToDtype(safeGet(json, "weaponDamageType", "??"));
-        _ammo       = safeGet(json, "weaponAmmoCount", 0);
-        _ammotype   = safeGet(json, "weaponAmmoType", "None");
+        mType = _convertStringToWType(safeGet(json, "type", "??"));
+        mDamageType = _convertStringToDtype(safeGet(json, "damageType", "??"));
+        mAmmoCount = safeGet(json, "ammoCount", 0);
+        mAmmoDesc = safeGet(json, "ammoType", "None");
     }
 
-    public WeaponEntry(String raw) throws MalformedEntryException
+    public WeaponEntry(String raw)
     {
         super(raw);
         JsonObject json = new JsonParser().parse(raw).getAsJsonObject();
@@ -51,10 +52,10 @@ public class WeaponEntry extends ItemEntry {
         catch (JsonParseException e) { throw new MalformedEntryException("Malformed ID"); }
 
 
-        _type       = _convertStringToWType(safeGet(json, "weaponType", "??"));
-        _damagetype = _convertStringToDtype(safeGet(json, "weaponDamageType", "??"));
-        _ammo       = safeGet(json, "weaponAmmoCount", 0);
-        _ammotype   = safeGet(json, "weaponAmmoType", "None");
+        mType = _convertStringToWType(safeGet(json, "type", "??"));
+        mDamageType = _convertStringToDtype(safeGet(json, "damageType", "??"));
+        mAmmoCount = safeGet(json, "ammoCount", 0);
+        mAmmoDesc = safeGet(json, "ammoType", "None");
     }
 
     @Override
@@ -65,29 +66,29 @@ public class WeaponEntry extends ItemEntry {
 
         master.addProperty("typeid", 2);
         master.add("weapon", json);
-        json.addProperty("type", _invertType(_type));
-        json.addProperty("damageType", _invertDamageType(_damagetype));
-        json.addProperty("ammoCount", _ammo);
-        json.addProperty("ammoType", _ammotype);
+        json.addProperty("type", _invertType(mType));
+        json.addProperty("damageType", _invertDamageType(mDamageType));
+        json.addProperty("ammoCount", mAmmoCount);
+        json.addProperty("ammoType", mAmmoDesc);
 
         return master;
     }
 
     @Override
-    public int performRoll()
+    public RollResult onRoll(RollResult res)
     {
-        int roll = _roll();
+        res = super.onRoll(res);
         if (isConsumable() && canRoll())
-            _ammo -= 1;
-        return roll;
+            mAmmoCount -= 1;
+        return res;
     }
 
-    public WeaponType getType() { return _type; }
-    public WeaponType getWeaponType() { return _type; }
-    public DamageType getDamageType() { return _damagetype; }
-    public boolean isRanged() { return _type == WeaponType.Ranged; }
-    public boolean isMelee() { return _type == WeaponType.Melee; }
-    public boolean isMagical() { return _type == WeaponType.Magical; }
+    public WeaponType getType() { return mType; }
+    public WeaponType getWeaponType() { return mType; }
+    public DamageType getDamageType() { return mDamageType; }
+    public boolean isRanged() { return mType == WeaponType.Ranged; }
+    public boolean isMelee() { return mType == WeaponType.Melee; }
+    public boolean isMagical() { return mType == WeaponType.Magical; }
 
     public String getWeaponDescriptor()
     {
@@ -101,8 +102,13 @@ public class WeaponEntry extends ItemEntry {
 
     protected String getTypeDescriptor()
     {
-        // ever feel like doing things the hard way because you can?
-        return (_damagetype == getDamageType().Slash) ? "Slashing" : (_damagetype == DamageType.Pierce) ? "Piercing" : (_damagetype == DamageType.Blunt) ? "Bludgeoning" : "???";
+        if (mDamageType == DamageType.Slash)
+            return "Slashing";
+        else if (mDamageType == DamageType.Blunt)
+            return "Bludgeoning";
+        else if (mDamageType == DamageType.Pierce)
+            return "Piercing";
+        else return "???";
     }
 
     protected WeaponType _convertStringToWType(String param)

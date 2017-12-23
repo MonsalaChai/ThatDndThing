@@ -2,4 +2,9 @@
     <string name="app_name">DnDThing</string>
     <string name="title_tab_detail">Tab Detail</string>
     <string name="unknown_entry">Unknown</string>
+    <string name="helptext_coming">More help text coming soon!</string>
+    <string name="unused_long_desc">Unused description space</string>
+
+
+    <string name="unused_skill_source_desc">Source description unavailable.</string>
 </resources>

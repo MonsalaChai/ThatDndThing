@@ -1,22 +1,24 @@
 package com.monsalachai.dndthing.entry;
 
+
+import android.app.AlertDialog;
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Rect;
+import android.content.DialogInterface;
 import android.support.design.widget.Snackbar;
-import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import com.monsalachai.dndthing.App;
 import com.monsalachai.dndthing.R;
+import com.monsalachai.dndthing.roll.Roll;
+import com.monsalachai.dndthing.roll.RollResult;
 
 import java.util.Locale;
-import java.util.Random;
 
 /**
  * Created by mesalu on 12/8/17.
@@ -31,187 +33,143 @@ public class Entry {
         }
     }
 
-    // custom view class
-    public class EntryView extends View {
-        protected boolean _showRoll;
-        protected Paint _paint;
-        public EntryView(Context context) {
-            super(context);
-            initDrawingResources();
-            initOther();
-        }
-        public EntryView(Context context, AttributeSet attrs)
-        {
-            super(context, attrs);
-            TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
-                                                                     R.styleable.EntryView,
-                                                                     0, 0);
-            _showRoll = a.getBoolean(R.styleable.EntryView_showRoll, false);
-
-            a.recycle();
-
-            initDrawingResources();
-            initOther();
-
-
-        }
-
-        public boolean rollIsEnabled() { return _showRoll; }
-        public void setRollEnabled(boolean state)
-        {
-            _showRoll = state;
-            invalidate();
-            requestLayout();
-        }
-
-        @Override
-        protected void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
-
-            // freaking java man. No implicit conversion between double and float? really?
-            setTextSizeForWidth(_paint, 400, "Hello World");
-            canvas.drawText("Hello World", (float)(getWidth()/ 2.0) - 200, (float)(getHeight() / 2.0), _paint);
-
-        }
-
-
-        protected void setTextSizeForWidth(Paint paint, float desiredWidth, String sampletext)
-        {
-            // again, WTF java. casting "double" to float...
-            final float initialSize = (float)48.0;
-
-            paint.setTextSize(initialSize);
-            Rect rect = new Rect();
-
-            paint.getTextBounds(sampletext, 0, sampletext.length(), rect);
-
-            // finalize size.
-            float finalSize = initialSize * desiredWidth / rect.width();
-            paint.setTextSize(finalSize);
-        }
-
-        protected void initDrawingResources()
-        {
-            // do any init for required drawing resources to save time during draw events.
-            _paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            _paint.setARGB(255, 192, 192, 192);
-        }
-
-        protected void initOther()
-        {
-            this.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // create a snackbar message with the optional action to roll
-                    OnClickListener ocl = new OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Log.i("OCL", "Do the thing with the rolly things.");
-                        }
-                    };
-                    Snackbar.make(view, getRoll(), Snackbar.LENGTH_LONG)
-                            .setAction("Roll!", (_showRoll) ? ocl : null).show();
-                }
-            });
-        }
-    }
-
-
-
     //  Note: <modifier>d<die> + <constant>
-    private boolean _rollable;
-    private boolean _critable;
-    private int _die;
-    private int _modifier;
-    private int _constant;
-    private String _label;
+    private boolean mRollable;
+    private boolean mCritable;
+    private int mDie;
+    private int mCoefficient;
+    private int mConstant;
+    private String mName;
+    private String mDescription;
 
     Entry() {
         // Default constructor.
-        _rollable = false;
-        _critable = false;
-        _die = 0;
-        _modifier = 1;
-        _constant = 0;
-        _label = "Unknown"; // todo, figure out how to use R.string.unknown_entry instead
-        //Resources.getSystem().getString(android.R.string.unknown_entry); //<-- cannot resolve symbol
+        mRollable = false;
+        mCritable = false;
+        mDie = 0;
+        mCoefficient = 1;
+        mConstant = 0;
+        mName = App.getGlobalContext().getResources().getString(R.string.unknown_entry);
+        mDescription = App.getGlobalContext().getResources().getString(R.string.unused_long_desc);
     }
 
     Entry(JsonObject json) {
-        _rollable = safeGet(json, "rollable", false);
-        _critable = safeGet(json, "critable", false);
-        _die      = safeGet(json, "die", 20);
-        _constant = safeGet(json, "constant", 0);
-        _modifier = safeGet(json, "modifier", 1);
-        _label    = safeGet(json, "label", "Unknown");
+        mRollable = safeGet(json, "rollable", false);
+        mCritable = safeGet(json, "critable", false);
+        mDie = safeGet(json, "die", 20);
+        mConstant = safeGet(json, "constant", 0);
+        mCoefficient = safeGet(json, "coefficient", 1);
+        mName = safeGet(json, "label", App.getGlobalContext().getResources().getString(R.string.unknown_entry));
+        mDescription = safeGet(json, "desc", App.getGlobalContext().getResources().getString(R.string.unused_long_desc));
     }
 
     Entry(String raw) {
         JsonObject json = new JsonParser().parse(raw).getAsJsonObject();
-        _rollable = safeGet(json, "rollable", false);
-        _critable = safeGet(json, "critable", false);
-        _die      = safeGet(json, "die", 20);
-        _constant = safeGet(json, "constant", 0);
-        _modifier = safeGet(json, "modifier", 1);
-        _label    = safeGet(json, "label", "Unknown");
+        mRollable = safeGet(json, "rollable", false);
+        mCritable = safeGet(json, "critable", false);
+        mDie = safeGet(json, "die", 20);
+        mConstant = safeGet(json, "constant", 0);
+        mCoefficient = safeGet(json, "coefficient", 1);
+        mName = safeGet(json, "label", App.getGlobalContext().getResources().getString(R.string.unknown_entry));
+        mDescription = safeGet(json, "desc", App.getGlobalContext().getResources().getString(R.string.unused_long_desc));
     }
 
     public JsonObject serialize() {
         JsonObject json = new JsonObject();
 
-        json.add("rollable", new JsonPrimitive(_rollable));
-        json.add("die", new JsonPrimitive(_die));
-        json.add("constant", new JsonPrimitive(_constant));
-        json.add("label", new JsonPrimitive(_label));
+        json.add("rollable", new JsonPrimitive(mRollable));
+        json.add("die", new JsonPrimitive(mDie));
+        json.add("coefficient", new JsonPrimitive(mCoefficient));
+        json.add("constant", new JsonPrimitive(mConstant));
+        json.add("label", new JsonPrimitive(mName));
+        json.add("desc", new JsonPrimitive(mDescription));
 
         return json;
     }
 
-    public boolean canRoll() { return _rollable; }
-    public boolean canCrit() { return _critable; }
-    public String  getRoll() { return  (_rollable) ? String.format(Locale.US, "%dd%d+%d", _modifier, _die, _constant) : "Not Rollable";}
-    public String getLabel() { return _label;}
-    public int performRoll() {
-        return _roll();
+    public boolean canRoll() { return mRollable; }
+    public boolean canCrit() { return mCritable; }
+    public String getRollDescriptor() { return  (mRollable) ? String.format(Locale.US, "%dd%d+%d", mCoefficient, mDie, mConstant) : "Not Rollable";}
+    public String getLabel() { return mName;}
+    public String getActionDescriptor() { return "Roll!"; }
+
+
+    public RollResult roll()
+    {
+        RollResult result = Roll.makeRoll(mCoefficient, mDie, mConstant);
+        result = onRoll(result);
+        return result;
+    }
+
+    // override this to hook into a roll event rather than overriding roll().
+    protected RollResult onRoll(RollResult carryover)
+    {
+        return carryover;
     }
 
     public View generateView(Context context)
     {
-        EntryView ev = new EntryView(context);
-        ev.setRollEnabled(_rollable);
-        return ev;
+        // get an inflater:
+        LayoutInflater inflater = (LayoutInflater)context.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View v = inflater.inflate(R.layout.view_entry, null);
+
+        // set some stuff up in v...
+        setCustomOnClickListener(v, context);
+
+        TextView tv = v.findViewById(R.id.entry_label_tv);
+        tv.setText(getLabel(), TextView.BufferType.NORMAL);
+        tv = v.findViewById(R.id.entry_longdesc);
+        tv.setText(mDescription, TextView.BufferType.NORMAL);
+
+        setViewBackground(v);
+
+        return v;
     }
 
-    protected int _roll()
+    /**
+     * This method sets the background for the Entry View tile.
+     * It is invoked by the base level generateView juuuust before returning.
+     * You will need to call this directly if you override generateView
+     * @param v the View to assign a background to.
+     */
+    protected void setViewBackground(final View v)
     {
-        if (!_rollable)
-            return 0;
-
-        Log.d("Roll", "Is rollable.");
-
-        StringBuilder logmessage = new StringBuilder();
-        logmessage.append("Rolled: ");
-        logmessage.append(getRoll()).append(" -> ");
-
-        Random rng = new Random();
-        int roll = 0;
-        for (int i = 0; i < _modifier; i++)
-        {
-            int thisdie = rng.nextInt(_die) + 1; // 1 -> _die
-
-            // todo: check for critical success.
-
-            roll += thisdie;
-            logmessage.append(String.format(Locale.US, "%d, ", thisdie));
-        }
-        logmessage.append(String.format(Locale.US,"+ %d", _constant));
-        roll += _constant;
-
-        logmessage.append(" = ");
-        logmessage.append(roll);
-        Log.d("Roll", logmessage.toString());
-        return roll;
+        //getActivity().getDrawable(R.drawable.background_generic_entry);
+        v.setBackground(App.getGlobalContext().getDrawable(R.drawable.background_generic_entry));
     }
+
+    protected void setCustomOnClickListener(final View v, final Context context)
+    {
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(v, getRollDescriptor(), Snackbar.LENGTH_INDEFINITE).setAction(getActionDescriptor(), (mRollable) ? new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.i("SnackRoll", "The user has issued a roll!");
+                        RollResult rr = roll();
+                        Log.i("SnackRoll", "The user rolled: " + rr.getResult());
+
+
+
+                        // create a dialog:
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        builder.setMessage(rr.toString()).setTitle("Roll Result").setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Log.i("dlg+b", "They pressed the okay button.");
+                            }
+                        });
+
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+
+                    }
+                } : null).show();
+            }
+        });
+    }
+
 
     protected JsonObject safeGet(JsonObject json, String tag)
     {

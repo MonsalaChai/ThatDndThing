@@ -2,11 +2,13 @@ package com.monsalachai.dndthing;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
+import android.view.View;
 
 
 /**
@@ -28,22 +30,15 @@ public class TabDetailActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) { actionBar.setDisplayHomeAsUpEnabled(true);}
 
+        // handle setting the Title here, not in fragment.
+        CollapsingToolbarLayout appBar = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        appBar.setTitle(getIntent().getStringExtra("title"));
 
-        // savedInstanceState is non-null when there is fragment state
-        // saved from previous configurations of this activity
-        // (e.g. when rotating the screen from portrait to landscape).
-        // In this case, the fragment will automatically be re-added
-        // to its container so we don't need to manually add it.
-        // For more information, see the Fragments API guide at:
-        //
-        // http://developer.android.com/guide/components/fragments.html
-        //
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-
-            arguments.putString("title", "The Other Thing!");
+            arguments.putString("content", getIntent().getStringExtra("title"));
 
             TabDetailFragment fragment = new TabDetailFragment();
             fragment.setArguments(arguments);
@@ -51,7 +46,6 @@ public class TabDetailActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.tab_detail_container, fragment)
                     .commit();
-            Log.d("TDA", "Fragment added...?");
         }
     }
 

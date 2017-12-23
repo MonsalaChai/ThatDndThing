@@ -11,49 +11,55 @@ import java.util.LinkedList;
  * Created by mesalu on 12/9/17.
  */
 
-/* Todo: discuss db 'user' entries, or a hard-set resource for each skill modification source
- * which would also help with things like determining _classmod. */
-
 public class SkillEntry extends Entry {
     private class MiscSources
     {
-        public int mod;
-        public String text;
-        MiscSources(int modifier, String helptext) { mod = modifier; text = helptext;}
+        int mod;
+        String name;
+        String text;
+
+        MiscSources(int modifier, String name, String helptext)
+        {
+            mod = modifier;
+            this.name = name;
+            text = helptext;
+        }
     }
 
-    private int _miscmod;
-    private int _classmod;
-    private int _ranks;
-    private LinkedList<MiscSources> _sources;
+    private int mMiscMod;
+    private boolean mClassSkill;
+    private int mRanks;
+    private LinkedList<MiscSources> mSources;
 
     public SkillEntry()
     {
         super();
-        _miscmod = 0;
-        _classmod = 0;
-        _ranks = 0;
-        _sources = null;
+        mMiscMod = 0;
+        mClassSkill = false;
+        mRanks = 0;
+        mSources = null;
     }
 
     public SkillEntry(JsonObject json)
     {
         super(json);
-        json = safeGet(json, "skills");
+        json = safeGet(json, "skill");
         if (json == null) throw new MalformedEntryException("Malformed ID");
 
-        _miscmod = 0;
-        _sources = new LinkedList<>();
+        mMiscMod = 0;
+        mSources = new LinkedList<>();
 
-        _ranks    = safeGet(json,  "ranks", 0);
-        _classmod = safeGet(json, "classSkill", 0);
+        mRanks = safeGet(json,  "ranks", 0);
+        mClassSkill = safeGet(json, "classSkill", false);
 
         for (JsonElement js : json.getAsJsonArray("miscSources"))
         {
             JsonObject jso = js.getAsJsonObject();
-            MiscSources ms = new MiscSources(jso.get("mod").getAsInt(), jso.get("text").getAsString());
-            _miscmod += ms.mod;
-            _sources.add(ms);
+            MiscSources ms = new MiscSources(jso.get("mod").getAsInt(),
+                    jso.get("name").getAsString(),
+                    jso.get("text").getAsString());
+            mMiscMod += ms.mod;
+            mSources.add(ms);
             // todo, look into using Gson object here instead.
         }
     }
@@ -63,22 +69,24 @@ public class SkillEntry extends Entry {
         super(raw);
         JsonObject json = null;
         try {
-            json = new JsonParser().parse(raw).getAsJsonObject().getAsJsonObject("skills");
+            json = new JsonParser().parse(raw).getAsJsonObject().getAsJsonObject("skill");
         }
         catch (com.google.gson.JsonParseException e) { throw new MalformedEntryException("Malformed ID"); }
 
-        _ranks = safeGet(json, "ranks", 0);
-        _classmod = safeGet(json, "classSkill", 0);
+        mRanks = safeGet(json, "ranks", 0);
+        mClassSkill = safeGet(json, "classSkill", false);
 
-        _miscmod = 0;
-        _sources = new LinkedList<>();
+        mMiscMod = 0;
+        mSources = new LinkedList<>();
 
         for (JsonElement js : json.getAsJsonArray("sources"))
         {
             JsonObject jso = js.getAsJsonObject();
-            MiscSources ms = new MiscSources(jso.get("mod").getAsInt(), jso.get("text").getAsString());
-            _miscmod += ms.mod;
-            _sources.add(ms);
+            MiscSources ms = new MiscSources(jso.get("mod").getAsInt(),
+                    jso.get("name").getAsString(),
+                    jso.get("text").getAsString());
+            mMiscMod += ms.mod;
+            mSources.add(ms);
             // todo, look into using Gson object here instead.
         }
     }
@@ -92,13 +100,13 @@ public class SkillEntry extends Entry {
         JsonObject skillsjson = new JsonObject();
         json.add("skills", skillsjson);
 
-        skillsjson.addProperty("skillRanks", _ranks);
-        skillsjson.addProperty("skillClassSkill", _classmod);
+        skillsjson.addProperty("skillRanks", mRanks);
+        skillsjson.addProperty("skillClassSkill", mClassSkill);
 
 
-        // create a json array with _sources.
+        // create a json array with mSources.
         JsonArray ja = new JsonArray();
-        for (MiscSources ms : _sources)
+        for (MiscSources ms : mSources)
         {
             JsonObject jo = new JsonObject();
             jo.addProperty("text", ms.text);
@@ -111,7 +119,7 @@ public class SkillEntry extends Entry {
         return json;
     }
 
-    public int getTotalModifier() { return _miscmod + _classmod + _ranks; }
+    public int getTotalModifier() { return mMiscMod + ((mClassSkill) ? 3 : 0) + mRanks; }
 
     // methods to get info on misc sources.
 

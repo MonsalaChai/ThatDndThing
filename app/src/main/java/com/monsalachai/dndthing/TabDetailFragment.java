@@ -1,8 +1,6 @@
 package com.monsalachai.dndthing;
 
-import android.app.Activity;
 import android.graphics.drawable.Drawable;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -10,11 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.monsalachai.dndthing.dummy.DummyContent;
 import com.monsalachai.dndthing.entry.EntryFactory;
+import com.monsalachai.dndthing.entry.EntryFactory.EntryBuilder;
 import com.monsalachai.dndthing.entry.ItemEntry;
+import com.monsalachai.dndthing.entry.SkillEntry;
+import com.monsalachai.dndthing.entry.WeaponEntry;
 
 /**
  * A fragment representing a single Tab detail screen.
@@ -39,14 +38,8 @@ public class TabDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments().containsKey("title")) {
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout);
-            if (appBarLayout != null)
-                appBarLayout.setTitle(getArguments().getString("title"));
-        }
+        // Find database content based on arguments["content"]
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,6 +54,8 @@ public class TabDetailFragment extends Fragment {
                         "    \"constant\":3,\n" +
                         "    \"label\":\"Potion of Potioning\",\n" +
                         "    \"typeid\":1,\n" +
+                        "    \"desc\" : \"Does some healing stuff with " +
+                        "some healing things to make you feel healed...-y.\"," +
                         "    \"item\" : {\n" +
                         "        \"weight\":150,\n" +
                         "        \"durability\":10,\n" +
@@ -73,9 +68,39 @@ public class TabDetailFragment extends Fragment {
         ItemEntry ie = (ItemEntry) EntryFactory.deflate(raw);
         View v = ie.generateView(getContext());
 
-        Drawable drawable = getActivity().getDrawable(R.drawable.tmpback);
-        v.setBackground(drawable);
         rootView.addView(v);
+
+        EntryBuilder builder = new EntryBuilder();
+        builder.setTypeWeapon().setRollable(true).setCritable(true)
+                .addRollDie(12).addConstantValue(32).addRollCoefficient(3)
+                .addLabel("Deathy Axe of Deathitude")
+                .addDescription("The deadly axe that causes death.")
+                .setWeaponSlashing().setWeaponMelee().addItemCount(1)
+                .addItemDurability(1337).addItemWeight(15);
+
+        WeaponEntry we = (WeaponEntry) builder.create();
+        v = we.generateView(getContext());
+        rootView.addView(v);
+
+        builder.clear();
+        builder.setTypeSkill().addLabel("Skill of deft Skillfulness").addSkillSource(5,
+                "SkillfulFeat",
+                "Your feet are so skillful you got a feat.")
+                .addDescription("You have very skillful feet.")
+                .setRollable(true).addRollDie(20).setCritable(true)
+                .addConstantValue(5);
+        SkillEntry se = (SkillEntry)builder.create();
+
+        v = se.generateView(getContext());
+
+
+        rootView.addView(v);
+
+        for (int i = 0; i < 6; i++)
+        {
+            v = builder.create().generateView(getContext());
+            rootView.addView(v);
+        }
         return rootView;
     }
 }
