@@ -29,7 +29,7 @@
         tools:context="com.monsalachai.dndthing.TabListActivity"
         tools:listitem="@layout/tab_list_content" />
 
-    <FrameLayout
+    <android.support.v4.widget.NestedScrollView
         android:id="@+id/tab_detail_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"

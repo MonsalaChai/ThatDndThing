@@ -108,6 +108,12 @@ public class TabDetailFragment extends Fragment {
 
         rootView.addView(v);
 
+        for (int i = 0; i < 6; i++)
+        {
+            v = builder.create().generateView(getContext());
+            v.setBackground(drawable);
+            rootView.addView(v);
+        }
         return rootView;
     }
 }
