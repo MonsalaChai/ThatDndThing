@@ -9,5 +9,6 @@
     <dimen name="entry_longdesc_size">12dp</dimen>
     <dimen name="entry_label_text_width">200sp</dimen>
     <dimen name="entry_label_text_size">18dp</dimen>
-    <dimen name="entry_corner_radius">10dp</dimen>
+    <dimen name="entry_drawable_corner_radius">10dp</dimen>
+    <dimen name="entry_drawable_edge_padding">5dp</dimen>
 </resources>
