@@ -1,9 +1,14 @@
 package com.monsalachai.dndthing.entry;
 
+import android.view.View;
+
+import com.monsalachai.dndthing.R;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.monsalachai.dndthing.App;
 
 import java.util.LinkedList;
 
@@ -120,6 +125,12 @@ public class SkillEntry extends Entry {
     }
 
     public int getTotalModifier() { return mMiscMod + ((mClassSkill) ? 3 : 0) + mRanks; }
+
+    @Override
+    protected void setViewBackground(View v)
+    {
+        v.setBackground(App.getGlobalContext().getDrawable(R.drawable.background_skill_entry));
+    }
 
     // methods to get info on misc sources.
 

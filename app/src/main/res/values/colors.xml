@@ -4,4 +4,6 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="textBlack">#000000</color>
+    <color name="background_entry_weapon">#ff0000</color>
+    <color name="background_entry_skill">#aa00fe</color>
 </resources>

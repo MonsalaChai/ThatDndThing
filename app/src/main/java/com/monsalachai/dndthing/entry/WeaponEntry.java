@@ -1,8 +1,12 @@
 package com.monsalachai.dndthing.entry;
 
+import android.view.View;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.monsalachai.dndthing.App;
+import com.monsalachai.dndthing.R;
 import com.monsalachai.dndthing.roll.RollResult;
 
 /**
@@ -99,6 +103,11 @@ public class WeaponEntry extends ItemEntry {
 
     }
 
+    @Override
+    protected void setViewBackground(View v)
+    {
+        v.setBackground(App.getGlobalContext().getDrawable(R.drawable.background_weapon_entry));
+    }
 
     protected String getTypeDescriptor()
     {

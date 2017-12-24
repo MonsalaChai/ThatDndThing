@@ -1,0 +1,12 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners
+        android:radius="@dimen/entry_drawable_corner_radius" />
+    <padding
+        android:left="@dimen/entry_drawable_edge_padding"
+        android:top="@dimen/entry_drawable_edge_padding"
+        android:right="@dimen/entry_drawable_edge_padding"
+        android:bottom="@dimen/entry_drawable_edge_padding" />
+    <stroke android:color="@color/background_entry_skill"
+        android:width="2dp"/>
+
+</shape>
