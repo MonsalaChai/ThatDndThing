@@ -1,6 +1,5 @@
 package com.monsalachai.dndthing;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -23,27 +22,27 @@ import com.monsalachai.dndthing.entry.WeaponEntry;
  */
 public class TabDetailFragment extends Fragment {
     /**
-     * The fragment argument representing the item ID that this fragment
-     * represents.
-     */
-    public static final String ARG_ITEM_ID = "item_id";
-
-    /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
     public TabDetailFragment() {
+        // Todo:
+        // Write a second "initial" contructor that fetches data
+        // and stores it in a static construct. Then load from that construct here.
+        // That way expensive data retrieval is only done once per tab activation.
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Find database content based on arguments["content"]
+        Log.i("TDF", "onCreate");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // NOTE: This is called per rotate, so avoid any expensive operations here.
+
         Log.d("TDF", getClass().toString() + ".onCreateView invoked.");
         Log.d("TDF", "Container: " + ((container == null) ? "null" : container.toString()));
         LinearLayout rootView = (LinearLayout) inflater.inflate(R.layout.fragment_tab_detail, container, false);
