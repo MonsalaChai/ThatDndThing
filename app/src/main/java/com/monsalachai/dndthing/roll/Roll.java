@@ -9,6 +9,17 @@ import java.util.Random;
 
 public class Roll {
     final static Random rng = new Random();
+
+    public static RollResult makeRoll(Die d, int x)
+    {
+        return Roll.makeRoll(d.getCoefficient(), d.getDie(), x);
+    }
+
+    public static RollResult makeRoll(Die d)
+    {
+        return Roll.makeRoll(d, 0);
+    }
+
     public static RollResult makeRoll(int c, int d, int x)
     {
         RollResult result = new RollResult(x);
