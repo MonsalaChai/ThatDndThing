@@ -8,11 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.monsalachai.dndthing.db.DbHandle;
+import com.monsalachai.dndthing.db.DndEntity;
+import com.monsalachai.dndthing.entry.Entry;
 import com.monsalachai.dndthing.entry.EntryFactory;
 import com.monsalachai.dndthing.entry.EntryFactory.EntryBuilder;
 import com.monsalachai.dndthing.entry.ItemEntry;
 import com.monsalachai.dndthing.entry.SkillEntry;
 import com.monsalachai.dndthing.entry.WeaponEntry;
+
+import java.util.List;
 
 /**
  * A fragment representing a single Tab detail screen.
@@ -21,6 +26,7 @@ import com.monsalachai.dndthing.entry.WeaponEntry;
  * on handsets.
  */
 public class TabDetailFragment extends Fragment {
+    private int tabType;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -36,16 +42,46 @@ public class TabDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i("TDF", "onCreate");
+
+        // Load entries from db based on content type.
+        final String content = getArguments().getString("content");
+        // convert from content-string to db int whatever
+        if (content != null) {
+            // Reference should be the same, so use .equals
+            if (content.equals(TabListActivity.DndTabAdapter.COMBAT))
+                tabType = DndEntity.Tag.COMBAT;
+            else if (content.equals(TabListActivity.DndTabAdapter.CHARACTER))
+                tabType = DndEntity.Tag.CHARACTER;
+            else if (content.equals(TabListActivity.DndTabAdapter.FEATS))
+                tabType = DndEntity.Tag.FEAT;
+            else if (content.equals(TabListActivity.DndTabAdapter.INVENTORY))
+                tabType = DndEntity.Tag.INVENTORY;
+            else if (content.equals(TabListActivity.DndTabAdapter.SKILLS))
+                tabType = DndEntity.Tag.SKILL;
+            else if (content.equals(TabListActivity.DndTabAdapter.SPELLS))
+                tabType = DndEntity.Tag.SPELL;
+            else
+                throw new RuntimeException("Apparently, the reference  is not the same.");
+        }
+        else
+            Log.wtf("TDF", "THE ARGUMENTS BUNDLE WAS NOT SET. PAAAAAAAANIIIIIIIC");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // NOTE: This is called per rotate, so avoid any expensive operations here.
+        LinearLayout rootView = (LinearLayout) inflater.inflate(R.layout.fragment_tab_detail, container, false);
 
+        List<Entry> l = DbHandle.getInstance("Testing").fetchAllByTag(tabType);
+        for (Entry e : l)
+            rootView.addView(e.generateView(getContext()));
+
+
+        /*
         Log.d("TDF", getClass().toString() + ".onCreateView invoked.");
         Log.d("TDF", "Container: " + ((container == null) ? "null" : container.toString()));
-        LinearLayout rootView = (LinearLayout) inflater.inflate(R.layout.fragment_tab_detail, container, false);
+
         String raw =
                 "{\n" +
                         "    \"rollable\":true,\n" +
@@ -99,7 +135,7 @@ public class TabDetailFragment extends Fragment {
         {
             v = builder.create().generateView(getContext());
             rootView.addView(v);
-        }
+        }*/
         return rootView;
     }
 }

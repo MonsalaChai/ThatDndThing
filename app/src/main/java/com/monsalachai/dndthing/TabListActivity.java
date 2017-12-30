@@ -59,16 +59,22 @@ public class TabListActivity extends AppCompatActivity {
     }
     public class DndTabAdapter extends RecyclerView.Adapter<DndTabAdapter.ViewHolder>
     {
+        public static final String CHARACTER = "Character";
+        public static final String INVENTORY = "Inventory";
+        public static final String COMBAT    = "Combat";
+        public static final String SPELLS    = "Spells";
+        public static final String SKILLS    = "Skills";
+        public static final String FEATS     = "Feats";
         List<String> mTitles;
         DndTabAdapter()
         {
             mTitles = new ArrayList<>();
-            mTitles.add("Character");
-            mTitles.add("Inventory");
-            mTitles.add("Combat");
-            mTitles.add("Spells");
-            mTitles.add("Skills");
-            mTitles.add("Feats");
+            mTitles.add(CHARACTER);
+            mTitles.add(INVENTORY);
+            mTitles.add(COMBAT);
+            mTitles.add(SPELLS);
+            mTitles.add(SKILLS);
+            mTitles.add(FEATS);
         }
 
         @Override
