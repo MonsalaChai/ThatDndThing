@@ -138,7 +138,7 @@ public class TabListActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putString("title", mTitles.get(position));
+                        arguments.putString("content", mTitles.get(position));
                         TabDetailFragment fragment = new TabDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
