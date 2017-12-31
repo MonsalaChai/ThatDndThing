@@ -7,7 +7,7 @@ import android.arch.persistence.room.RoomDatabase;
  * Created by mesalu on 12/27/2017.
  */
 
-@Database(entities = {DndEntity.class}, version=1)
+@Database(entities = {DndEntity.class}, version=2)
 public abstract class DndDatabase extends RoomDatabase{
     public abstract DndDao dndDao();
 }

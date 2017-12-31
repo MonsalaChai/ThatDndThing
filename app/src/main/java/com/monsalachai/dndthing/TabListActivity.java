@@ -7,10 +7,15 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.monsalachai.dndthing.db.DbHandle;
+import com.monsalachai.dndthing.db.DndEntity;
+import com.monsalachai.dndthing.roll.Die;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +55,47 @@ public class TabListActivity extends AppCompatActivity {
             // If this view is present, then the
             // activity should be in two-pane mode.
             mTwoPane = true;
+        }
+
+
+        /*  Uncomment to blow out database.
+        // 'automate' a storage wipe. (I got lazy)
+        DbHandle.getInstance("Testing").getDao().deleteAll(
+                DbHandle.getInstance("Testing").getDao().getAll()
+        );
+        */
+        // This code exists entirely for testing purposes.
+        // remove it before any semblance of production:
+        if (DbHandle.getInstance("Testing").getDao().getAll().size() <= 0)
+        {
+            Log.i("TLA", "Autofilling some table entries.");
+            DbHandle dbh = DbHandle.getInstance("Testing");
+            DndEntity de = new DndEntity();
+            de.setCombatTag(true);
+            de.setInventoryTag(true);
+            de.setType(DndEntity.Type.WEAPON);
+            de.setName("Deathy Axe of Deathitude II");
+            de.setDescription("The second axe of its kind. Freshly imported from the Persistent Lands");
+            de.setValue(new Die(3, 12));
+
+            // add the constant affect for the deathy axe.
+            DndEntity de2 = new DndEntity();
+            de2.setValue(33);
+            de.addAffector(de2.getUuid());
+            de2.setAffectee(de.getUuid());
+
+            // todo subclas DndEntity for AttributeEntities that handle
+            // auto-converting value and modifier.
+            DndEntity destr  = new DndEntity();
+            destr.setUuid(DndEntity.ReservedIds.AttributeId.STRENGTH);
+            destr.setValue(5);  // for now though: just supply the modifier.
+            destr.setType(DndEntity.Type.ATTRIBUTE);
+            destr.setName("Strength");
+            destr.setDescription("Your Character's strength (modifier, not score)");
+            destr.setCharacterTag(true);
+            de.addAffector(destr);
+
+            dbh.getDao().insertAll(de, de2, destr);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.monsalachai.dndthing.db;
 
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
@@ -18,12 +19,12 @@ public interface DndDao {
     List<DndEntity> getAll();
 
     // get a list of dndentities that appear in the affectors list.
-    @Query("SELECT * FROM entities WHERE luid IN (:luids)")
-    List<DndEntity> getdndentityById(int[] luids);
+    @Query("SELECT * FROM entities WHERE uuid IN (:luids)")
+    List<DndEntity> getEntityById(long[] luids);
 
     // get a specific entity by luid.
-    @Query("SELECT * FROM entities WHERE luid IS :id LIMIT 1")
-    DndEntity getEntityById(int id);
+    @Query("SELECT * FROM entities WHERE uuid IS :id LIMIT 1")
+    DndEntity getEntityById(long id);
 
     // get all Combat Entities.
     @Query("SELECT * FROM entities WHERE combatTag IS 1")
@@ -50,8 +51,20 @@ public interface DndDao {
     List<DndEntity> getFeatEntities();
 
     @Insert
-    void insertAll(DndEntity... entity);
+    long[] insertAll(DndEntity... entity);
+
+    @Insert
+    long insert(DndEntity entity);
 
     @Update
-    void updateEntity(DndEntity entity);
+    void update(DndEntity entity);
+
+    @Update
+    void updateAll(DndEntity... entity);
+
+    @Delete
+    void deleteAll(DndEntity... entity);
+
+    @Delete
+    void deleteAll(List<DndEntity> entities);
 }

@@ -1,6 +1,7 @@
 package com.monsalachai.dndthing.db;
 
 import android.arch.persistence.room.Room;
+import android.util.Log;
 
 import com.monsalachai.dndthing.App;
 import com.monsalachai.dndthing.entry.Entry;
@@ -38,6 +39,7 @@ public class DbHandle {
                     // implement the use of a "pending" view whilst
                     // waiting for a query.
                     .allowMainThreadQueries()
+                    .fallbackToDestructiveMigration()
                     .build();
             dbs.put(character, new DbHandle(database));
         }
@@ -54,6 +56,11 @@ public class DbHandle {
     private DbHandle(DndDatabase db)
     {
         this.db = db;
+    }
+
+    public DndDao getDao()
+    {
+        return this.db.dndDao();
     }
 
     public List<Entry> fetchAllByTag(int flags)
@@ -80,14 +87,14 @@ public class DbHandle {
     private void __loadEntries(List<Entry> dest, List<DndEntity> src) {
 
         // 1)  build a composite hash map of required entities:
-        HashMap<Integer, DndEntity> hash = new HashMap<>();
+        HashMap<Long, DndEntity> hash = new HashMap<>();
 
         for (DndEntity e : src)
-            hash.put(e.getLuid(), e);
+            hash.put(e.getUuid(), e);
 
         // 2) now load all "dependency" entities:
         for (DndEntity e  : src)
-            for (Integer id : e.getAffectorsById())
+            for (long id : e.getAffectorsById())
                 if (!hash.containsKey(id))
                     hash.put(id, db.dndDao().getEntityById(id));
 
@@ -106,7 +113,7 @@ public class DbHandle {
      * @param cache  A map that associates all (pre-fetched) Entities to their  luid
      * @param dest   A output list to store the newly created Entry in.
      */
-    private void __composeEntry(DndEntity target, Map<Integer, DndEntity> cache, List<Entry> dest) {
+    private void __composeEntry(DndEntity target, Map<Long, DndEntity> cache, List<Entry> dest) {
         EntryFactory.EntryBuilder eb = new EntryFactory.EntryBuilder();
         // attempt to copy name and description:
         String tmp = target.getName();
@@ -125,9 +132,14 @@ public class DbHandle {
 
         // load composite value
         int value = (d == null) ? target.getValueAsInt() : 0;
-        for (Integer id : target.getAffectorsById()) {
+        for (long id : target.getAffectorsById()) {
             // only directly support scalars here. (for now!)
             DndEntity de = cache.get(id);
+            if (de == null) {
+                Log.v("db", "You're about to crash. Congratulations.");
+                Log.v("db", "The database appears to be malformed. An entity lists a dependency that doesn't exist.");
+            }
+
             if (de.getValueAsDie() != null)
                 throw new RuntimeException("Composite die entities not yet supported");
             value += de.getValueAsInt();
@@ -151,7 +163,7 @@ public class DbHandle {
             eb.setTypeSkill();
 
             // create skill misc sources list.
-            for (int id : target.getAffectorsById())
+            for (long id : target.getAffectorsById())
             {
                 DndEntity de = cache.get(id);
                 eb.addSkillSource(de.getValueAsInt(),

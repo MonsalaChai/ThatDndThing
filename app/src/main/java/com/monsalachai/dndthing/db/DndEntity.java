@@ -3,11 +3,15 @@ package com.monsalachai.dndthing.db;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.util.Log;
 
+import com.monsalachai.dndthing.App;
+import com.monsalachai.dndthing.R;
 import com.monsalachai.dndthing.roll.Die;
 
 import java.util.Collection;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by mesalu on 12/27/2017.
@@ -35,8 +39,42 @@ public class DndEntity {
         public static final int SPELL = 0x20;
         public static final int ATTRIBUTE = 0x40;
     }
-    @PrimaryKey(autoGenerate = true)
-    private int luid;   // locally unique identifier
+
+    // The ResrvedIds class defines Ids with special meaning.
+    // It can contain further nested classes for the same purpose
+    // but it is up to the coder to ensure no conflicts arise.
+    // UUIDs  are generated from time of creation, and therefore
+    // all values below 1514762607900 (give or take several thousand)
+    // should be fine.
+    public static class ReservedIds {
+        // extra note: a convenience static method for
+        // assigning out Ids is not supplied to ensure consistency
+        // between revisions.
+        public static class AttributeId{
+            public static final long STRENGTH     = 1;
+            public static final long DEXTERITY    = 2;
+            public static final long CONSTITUTION = 3;
+            public static final long INTELLIGENCE = 4;
+            public static final long WISDOM       = 5;
+            public static final long CHARISMA     = 6;
+        }
+        // more resreved Ids to come.
+    }
+    private static final AtomicLong ts = new AtomicLong();
+    private static long generateUuidFromTime()
+    {
+        long micros = System.currentTimeMillis() * 1000;
+        for (;;) {
+            long value = ts.get();
+            if (micros <= value)
+                micros = value + 1; // we've already used this
+                                    // value for a UUID (That was fast!)
+            if (ts.compareAndSet(value, micros))
+                return micros;
+        }
+    }
+    @PrimaryKey
+    private long uuid;   // locally unique identifier
 
     @ColumnInfo(name="name")
     private String name;
@@ -80,34 +118,49 @@ public class DndEntity {
     @ColumnInfo(name="spellTag")
     private int spellTag;
 
-    public DndEntity(int luid)
+    public DndEntity()
     {
-        this.luid = luid;
+        uuid = generateUuidFromTime();
+        name = App.getGlobalContext().getString(R.string.unknown_entry);
+        description = App.getGlobalContext().getString(R.string.unused_long_desc);
+        value = "0";
+        affectors = "";
+        affects = "";
+
+
     }
 
     /**
      * Adds a locally unique identifier to the list of affectors.
      * If already in the list, it is not reappended.
-     * @param luid the luid to add.
+     * @param luid the uuid to add.
      */
-    public void addAffector(int luid)
+    public void addAffector(long luid)
     {
         for (String substring : affectors.split(","))
-            if  (Integer.parseInt(substring) == luid)
-                return;
-        // luid not in it:
+            if (substring.length() > 0)
+                if  (Long.parseLong(substring) == luid)
+                    return;
+
+        // uuid not in it:
         affectors += String.format(",%d", luid);
     }
 
-    // luid setter  and getter
-    public void setLuid(int id)
+    public void addAffector(DndEntity other)
     {
-        luid = id;
+        addAffector(other.getUuid());
     }
 
-    public int getLuid()
+    // uuid setter  and getter
+    public void setUuid(long id)
     {
-        return luid;
+        Log.d("DndEntity", "Setting entitiy LUID to: " + id);
+        uuid = id;
+    }
+
+    public long getUuid()
+    {
+        return uuid;
     }
 
     // name setter and getter.
@@ -119,36 +172,43 @@ public class DndEntity {
     public String getDescription() { return description; }
 
     // Affectors getter (use addAffector for setting.)
-    public Vector<Integer> getAffectorsById()
+    public Vector<Long> getAffectorsById()
     {
-        Vector<Integer> v = new Vector<>();
-
+        Vector<Long> v = new Vector<>();
         for (String substring : affectors.split(","))
-            v.add(Integer.parseInt(substring));
+            if (substring.length() > 0)
+                v.add(Long.parseLong(substring));
 
         return v;
     }
 
-    public int[] getAffectorsByIdAsArray()
+    public long[] getAffectorsByIdAsArray()
     {
         String[] arr = affectors.split(",");
-        int[] ret = new int[arr.length];
+        long[] ret = new long[arr.length];
 
         for (int i = 0 ; i < arr.length; i++)
-            ret[i] = Integer.parseInt(arr[i]);
+            ret[i] = Long.parseLong(arr[i]);
 
         return ret;
     }
 
-    // Affects setter and "getter"
+    public void setAffectee(long id)
+    {
+        StringBuilder sb = new StringBuilder(affects);
+        if (affects.length() > 0)
+            sb.append(",");
+        sb.append(id);
+        affects = sb.toString();
+    }
     public void setAffectees(String s)
     {
         affects = s;
     }
-    public void setAffectees(Collection<Integer> l)
+    public void setAffectees(Collection<Long> l)
     {
         StringBuilder sb = new StringBuilder();
-        for (Integer i : l)
+        for (long i : l)
             sb.append(",").append(i);
 
         affects = sb.toString();
