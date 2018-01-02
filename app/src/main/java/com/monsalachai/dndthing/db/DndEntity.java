@@ -154,7 +154,7 @@ public class DndEntity {
     // uuid setter  and getter
     public void setUuid(long id)
     {
-        Log.d("DndEntity", "Setting entitiy LUID to: " + id);
+        Log.d("DndEntity", "Setting entitiy UUID to: " + id);
         uuid = id;
     }
 

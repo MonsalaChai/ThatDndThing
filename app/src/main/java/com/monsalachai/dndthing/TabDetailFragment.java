@@ -27,6 +27,7 @@ import java.util.List;
  */
 public class TabDetailFragment extends Fragment {
     private int tabType;
+    public static final String CONTENT_ARG = "content";
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -44,7 +45,7 @@ public class TabDetailFragment extends Fragment {
         Log.i("TDF", "onCreate");
 
         // Load entries from db based on content type.
-        final String content = getArguments().getString("content");
+        final String content = getArguments().getString(CONTENT_ARG);
         // convert from content-string to db int whatever
         if (content != null) {
             // Reference should be the same, so use .equals

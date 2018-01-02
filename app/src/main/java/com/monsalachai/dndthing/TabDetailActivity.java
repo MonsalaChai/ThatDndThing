@@ -38,7 +38,7 @@ public class TabDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString("content", getIntent().getStringExtra("title"));
+            arguments.putString(TabDetailFragment.CONTENT_ARG, getIntent().getStringExtra("title"));
 
             TabDetailFragment fragment = new TabDetailFragment();
             fragment.setArguments(arguments);
