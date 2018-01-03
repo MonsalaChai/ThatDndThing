@@ -50,27 +50,13 @@ public class DndEntity {
         // extra note: a convenience static method for
         // assigning out Ids is not supplied to ensure consistency
         // between revisions.
-        public static class AttributeId {
+        public static class AttributeId{
             public static final long STRENGTH     = 1;
             public static final long DEXTERITY    = 2;
             public static final long CONSTITUTION = 3;
             public static final long INTELLIGENCE = 4;
             public static final long WISDOM       = 5;
             public static final long CHARISMA     = 6;
-
-            // These are probably just a straight bad-idea. But it makes composition
-            // easier.
-            public static final long STRENGTH_MOD     = 7;
-            public static final long DEXTERITY_MOD    = 8;
-            public static final long CONSTITUTION_MOD = 9;
-            public static final long INTELLIGENCE_MOD = 10;
-            public static final long WISDOM_MOD       = 11;
-            public static final long CHARISMA_MOD     = 12;
-
-        }
-
-        public static class MiscId {
-            public static final long INITIATIVE   = 13;
         }
         // more resreved Ids to come.
     }
