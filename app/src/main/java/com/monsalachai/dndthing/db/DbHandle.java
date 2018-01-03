@@ -41,6 +41,11 @@ public class DbHandle {
                     .allowMainThreadQueries()
                     .fallbackToDestructiveMigration()
                     .build();
+
+            DbHandle dbh = new DbHandle(database);
+            if (dbh.getDao().getAll().size() <= 0)
+                dbh.autoFillBaseInfo();
+
             dbs.put(character, new DbHandle(database));
         }
         return dbs.get(character);
@@ -133,11 +138,13 @@ public class DbHandle {
         // load composite value
         int value = (d == null) ? target.getValueAsInt() : 0;
         for (long id : target.getAffectorsById()) {
-            // only directly support scalars here. (for now!)
+            // only directly support scalars here. (for now!) (IE: no composite die rolls: 1d12 + 2d4)
             DndEntity de = cache.get(id);
             if (de == null) {
                 Log.v("db", "You're about to crash. Congratulations.");
                 Log.v("db", "The database appears to be malformed. An entity lists a dependency that doesn't exist.");
+                Log.v("db", "Perpetrating dependency ID: " + id);
+                Log.v("db", "ID of target: " + target.getUuid());
             }
 
             if (de.getValueAsDie() != null)
@@ -180,5 +187,140 @@ public class DbHandle {
             eb.setTypeSpell();
         }
         dest.add(eb.create());
+    }
+
+    /**
+     * Called when a database is determined to be empty.
+     * Should fill in some default information so that all characters are ready to edit by the user
+     * from the get-go.
+     */
+    private void autoFillBaseInfo()
+    {
+        // Todo: change these string literals to string resources.
+
+        // Strength:
+        DndEntity de = new DndEntity();
+        de.setName("Strength");
+        de.setDescription("Your character's physical capabilities");
+        de.setUuid(DndEntity.ReservedIds.AttributeId.STRENGTH);
+        de.setValue(10);
+        de.setType(DndEntity.Type.ATTRIBUTE);
+        de.setCharacterTag(true);
+        db.dndDao().insert(de);
+
+        de = new DndEntity();
+        de.setName("str_mod");
+        de.setDescription("A hack around (int)((value-10)/2)");
+        de.setUuid(DndEntity.ReservedIds.AttributeId.STRENGTH_MOD);
+        de.setValue(0);
+        db.dndDao().insert(de);
+
+        // Dexterity:
+        de = new DndEntity();       // Todo: findout if just changing the uuid would allow reuse as temporary
+        de.setName("Dexterity");
+        de.setDescription("Your character's physical coordination");
+        de.setUuid(DndEntity.ReservedIds.AttributeId.DEXTERITY);
+        de.setValue(10);
+        de.setType(DndEntity.Type.ATTRIBUTE);
+        de.setCharacterTag(true);
+        db.dndDao().insert(de);
+
+        de = new DndEntity();
+        de.setName("dex_mod");
+        de.setDescription("A hack around (int)((value-10)/2)");
+        de.setUuid(DndEntity.ReservedIds.AttributeId.DEXTERITY_MOD);
+        de.setValue(0);
+        db.dndDao().insert(de);
+
+        // Constitution
+        de = new DndEntity();
+        de.setName("Constitution");
+        de.setDescription("Your character's physical sturdiness");
+        de.setUuid(DndEntity.ReservedIds.AttributeId.CONSTITUTION);
+        de.setValue(10);
+        de.setType(DndEntity.Type.ATTRIBUTE);
+        de.setCharacterTag(true);
+        db.dndDao().insert(de);
+
+        de = new DndEntity();
+        de.setName("con_mod");
+        de.setDescription("A hack around (int)((value-10)/2)");
+        de.setUuid(DndEntity.ReservedIds.AttributeId.CONSTITUTION_MOD);
+        de.setValue(0);
+        db.dndDao().insert(de);
+
+        // Intelligence
+        de = new DndEntity();
+        de.setName("Intelligence");
+        de.setDescription("Your character's book knowledge.");
+        de.setUuid(DndEntity.ReservedIds.AttributeId.INTELLIGENCE);
+        de.setValue(10);
+        de.setType(DndEntity.Type.ATTRIBUTE);
+        de.setCharacterTag(true);
+        db.dndDao().insert(de);
+
+        de = new DndEntity();
+        de.setName("int_mod");
+        de.setDescription("A hack around (int)((value-10)/2)");
+        de.setUuid(DndEntity.ReservedIds.AttributeId.INTELLIGENCE_MOD);
+        de.setValue(0);
+        db.dndDao().insert(de);
+
+        // Wisdom
+        de = new DndEntity();
+        de.setName("Wisdom");
+        de.setDescription("Your character's mental power and wit");
+        de.setUuid(DndEntity.ReservedIds.AttributeId.WISDOM);
+        de.setValue(10);
+        de.setType(DndEntity.Type.ATTRIBUTE);
+        de.setCharacterTag(true);
+        db.dndDao().insert(de);
+
+        de = new DndEntity();
+        de.setName("wis_mod");
+        de.setDescription("A hack around (int)((value-10)/2)");
+        de.setUuid(DndEntity.ReservedIds.AttributeId.WISDOM_MOD);
+        de.setValue(0);
+        db.dndDao().insert(de);
+
+        // Charisma
+        de = new DndEntity();
+        de.setName("Charisma");
+        de.setDescription("Your character's social capability");
+        de.setUuid(DndEntity.ReservedIds.AttributeId.CHARISMA);
+        de.setValue(10);
+        de.setType(DndEntity.Type.ATTRIBUTE);
+        de.setCharacterTag(true);
+        db.dndDao().insert(de);
+
+        de = new DndEntity();
+        de.setName("cha_mod");
+        de.setDescription("A hack around (int)((value-10)/2)");
+        de.setUuid(DndEntity.ReservedIds.AttributeId.CHARISMA_MOD);
+        de.setValue(0);
+        db.dndDao().insert(de);
+
+        de = new DndEntity();
+        de.setName("Initiative");
+        de.setDescription("Your character's readiness");
+        de.setUuid(DndEntity.ReservedIds.MiscId.INITIATIVE);
+        de.setValue(0);
+        de.addAffector(DndEntity.ReservedIds.AttributeId.DEXTERITY_MOD);
+        de.setCombatTag(true);
+        de.setSkillTag(true);
+        db.dndDao().insert(de);
+
+        // insert skills here:
+
+        // and now some example weapons.
+        de = new DndEntity();
+        de.setName("Example Weapon");
+        de.setDescription("A stock long sword.");
+        de.setValue(new Die(1, 6));
+        de.setType(DndEntity.Type.WEAPON);
+        de.addAffector(DndEntity.ReservedIds.AttributeId.STRENGTH_MOD);
+        de.setInventoryTag(true);
+        de.setCombatTag(true);
+        db.dndDao().insert(de);
     }
 }

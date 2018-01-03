@@ -63,40 +63,7 @@ public class TabListActivity extends AppCompatActivity {
         DbHandle.getInstance("Testing").getDao().deleteAll(
                 DbHandle.getInstance("Testing").getDao().getAll()
         );
-        */
-        // This code exists entirely for testing purposes.
-        // remove it before any semblance of production:
-        if (DbHandle.getInstance("Testing").getDao().getAll().size() <= 0)
-        {
-            Log.i("TLA", "Autofilling some table entries.");
-            DbHandle dbh = DbHandle.getInstance("Testing");
-            DndEntity de = new DndEntity();
-            de.setCombatTag(true);
-            de.setInventoryTag(true);
-            de.setType(DndEntity.Type.WEAPON);
-            de.setName("Deathy Axe of Deathitude II");
-            de.setDescription("The second axe of its kind. Freshly imported from the Persistent Lands");
-            de.setValue(new Die(3, 12));
-
-            // add the constant affect for the deathy axe.
-            DndEntity de2 = new DndEntity();
-            de2.setValue(33);
-            de.addAffector(de2.getUuid());
-            de2.setAffectee(de.getUuid());
-
-            // todo subclas DndEntity for AttributeEntities that handle
-            // auto-converting value and modifier.
-            DndEntity destr  = new DndEntity();
-            destr.setUuid(DndEntity.ReservedIds.AttributeId.STRENGTH);
-            destr.setValue(5);  // for now though: just supply the modifier.
-            destr.setType(DndEntity.Type.ATTRIBUTE);
-            destr.setName("Strength");
-            destr.setDescription("Your Character's strength (modifier, not score)");
-            destr.setCharacterTag(true);
-            de.addAffector(destr);
-
-            dbh.getDao().insertAll(de, de2, destr);
-        }
+        // */
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
