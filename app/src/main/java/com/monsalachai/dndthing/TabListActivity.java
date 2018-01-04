@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.monsalachai.dndthing.db.DataLoader;
+import com.monsalachai.dndthing.db.AppDatabase;
 import com.monsalachai.dndthing.db.MainEntity;
 import com.monsalachai.dndthing.roll.Die;
 
@@ -56,7 +56,7 @@ public class TabListActivity extends AppCompatActivity {
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
-
+        Log.i("TLA", "Two pane mode set to: " + mTwoPane);
 
         /*  Uncomment to blow out database.
         // 'automate' a storage wipe. (I got lazy)
@@ -66,10 +66,10 @@ public class TabListActivity extends AppCompatActivity {
         */
         // This code exists entirely for testing purposes.
         // remove it before any semblance of production:
-        if (DataLoader.getInstance("Testing").getDao().getAll().size() <= 0)
+        if (AppDatabase.getInstance("Testing").mainDao().getAll().size() <= 0)
         {
             Log.i("TLA", "Autofilling some table entries.");
-            DataLoader dbh = DataLoader.getInstance("Testing");
+            AppDatabase db = AppDatabase.getInstance("Testing");
             MainEntity de = new MainEntity();
             de.setCombatTag(true);
             de.setInventoryTag(true);
@@ -82,7 +82,6 @@ public class TabListActivity extends AppCompatActivity {
             MainEntity de2 = new MainEntity();
             de2.setValue(33);
             de.addAffector(de2.getUuid());
-            de2.setAffectee(de.getUuid());
 
             // todo subclas MainEntity for AttributeEntities that handle
             // auto-converting value and modifier.
@@ -95,7 +94,7 @@ public class TabListActivity extends AppCompatActivity {
             destr.setCharacterTag(true);
             de.addAffector(destr);
 
-            dbh.getDao().insertAll(de, de2, destr);
+            db.mainDao().insertAll(de, de2, destr);
         }
     }
 
