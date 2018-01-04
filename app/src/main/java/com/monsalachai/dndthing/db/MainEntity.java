@@ -85,7 +85,7 @@ public class MainEntity {
     @ColumnInfo(name="value")
     private String value;
 
-    @ColumnInfo(name="desciption")
+    @ColumnInfo(name="description")
     private String description;
 
     // This has been removed (for now) as it is currently unused, and prone to falling behind the
