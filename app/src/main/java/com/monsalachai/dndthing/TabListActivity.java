@@ -13,8 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.monsalachai.dndthing.db.DbHandle;
-import com.monsalachai.dndthing.db.DndEntity;
+import com.monsalachai.dndthing.db.DataLoader;
+import com.monsalachai.dndthing.db.MainEntity;
 import com.monsalachai.dndthing.roll.Die;
 
 import java.util.ArrayList;
@@ -60,36 +60,36 @@ public class TabListActivity extends AppCompatActivity {
 
         /*  Uncomment to blow out database.
         // 'automate' a storage wipe. (I got lazy)
-        DbHandle.getInstance("Testing").getDao().deleteAll(
-                DbHandle.getInstance("Testing").getDao().getAll()
+        DataLoader.getInstance("Testing").getDao().deleteAll(
+                DataLoader.getInstance("Testing").getDao().getAll()
         );
         */
         // This code exists entirely for testing purposes.
         // remove it before any semblance of production:
-        if (DbHandle.getInstance("Testing").getDao().getAll().size() <= 0)
+        if (DataLoader.getInstance("Testing").getDao().getAll().size() <= 0)
         {
             Log.i("TLA", "Autofilling some table entries.");
-            DbHandle dbh = DbHandle.getInstance("Testing");
-            DndEntity de = new DndEntity();
+            DataLoader dbh = DataLoader.getInstance("Testing");
+            MainEntity de = new MainEntity();
             de.setCombatTag(true);
             de.setInventoryTag(true);
-            de.setType(DndEntity.Type.WEAPON);
+            de.setType(MainEntity.Type.WEAPON);
             de.setName("Deathy Axe of Deathitude II");
             de.setDescription("The second axe of its kind. Freshly imported from the Persistent Lands");
             de.setValue(new Die(3, 12));
 
             // add the constant affect for the deathy axe.
-            DndEntity de2 = new DndEntity();
+            MainEntity de2 = new MainEntity();
             de2.setValue(33);
             de.addAffector(de2.getUuid());
             de2.setAffectee(de.getUuid());
 
-            // todo subclas DndEntity for AttributeEntities that handle
+            // todo subclas MainEntity for AttributeEntities that handle
             // auto-converting value and modifier.
-            DndEntity destr  = new DndEntity();
-            destr.setUuid(DndEntity.ReservedIds.AttributeId.STRENGTH);
+            MainEntity destr  = new MainEntity();
+            destr.setUuid(MainEntity.ReservedIds.AttributeId.STRENGTH);
             destr.setValue(5);  // for now though: just supply the modifier.
-            destr.setType(DndEntity.Type.ATTRIBUTE);
+            destr.setType(MainEntity.Type.ATTRIBUTE);
             destr.setName("Strength");
             destr.setDescription("Your Character's strength (modifier, not score)");
             destr.setCharacterTag(true);

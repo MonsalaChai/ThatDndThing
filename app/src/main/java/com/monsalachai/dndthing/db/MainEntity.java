@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 
 @Entity(tableName = "entities")
-public class DndEntity {
+public class MainEntity {
     public static class Tag {
         public static final int COMBAT = 0x1;
         public static final int CHARACTER = 0x2;
@@ -118,7 +118,7 @@ public class DndEntity {
     @ColumnInfo(name="spellTag")
     private int spellTag;
 
-    public DndEntity()
+    public MainEntity()
     {
         uuid = generateUuidFromTime();
         name = App.getGlobalContext().getString(R.string.unknown_entry);
@@ -146,7 +146,7 @@ public class DndEntity {
         affectors += String.format(",%d", luid);
     }
 
-    public void addAffector(DndEntity other)
+    public void addAffector(MainEntity other)
     {
         addAffector(other.getUuid());
     }
@@ -154,7 +154,7 @@ public class DndEntity {
     // uuid setter  and getter
     public void setUuid(long id)
     {
-        Log.d("DndEntity", "Setting entitiy UUID to: " + id);
+        Log.d("MainEntity", "Setting entitiy UUID to: " + id);
         uuid = id;
     }
 

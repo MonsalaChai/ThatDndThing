@@ -8,14 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.monsalachai.dndthing.db.DbHandle;
-import com.monsalachai.dndthing.db.DndEntity;
+import com.monsalachai.dndthing.db.DataLoader;
+import com.monsalachai.dndthing.db.MainEntity;
 import com.monsalachai.dndthing.entry.Entry;
-import com.monsalachai.dndthing.entry.EntryFactory;
-import com.monsalachai.dndthing.entry.EntryFactory.EntryBuilder;
-import com.monsalachai.dndthing.entry.ItemEntry;
-import com.monsalachai.dndthing.entry.SkillEntry;
-import com.monsalachai.dndthing.entry.WeaponEntry;
 
 import java.util.List;
 
@@ -50,17 +45,17 @@ public class TabDetailFragment extends Fragment {
         if (content != null) {
             // Reference should be the same, so use .equals
             if (content.equals(TabListActivity.DndTabAdapter.COMBAT))
-                tabType = DndEntity.Tag.COMBAT;
+                tabType = MainEntity.Tag.COMBAT;
             else if (content.equals(TabListActivity.DndTabAdapter.CHARACTER))
-                tabType = DndEntity.Tag.CHARACTER;
+                tabType = MainEntity.Tag.CHARACTER;
             else if (content.equals(TabListActivity.DndTabAdapter.FEATS))
-                tabType = DndEntity.Tag.FEAT;
+                tabType = MainEntity.Tag.FEAT;
             else if (content.equals(TabListActivity.DndTabAdapter.INVENTORY))
-                tabType = DndEntity.Tag.INVENTORY;
+                tabType = MainEntity.Tag.INVENTORY;
             else if (content.equals(TabListActivity.DndTabAdapter.SKILLS))
-                tabType = DndEntity.Tag.SKILL;
+                tabType = MainEntity.Tag.SKILL;
             else if (content.equals(TabListActivity.DndTabAdapter.SPELLS))
-                tabType = DndEntity.Tag.SPELL;
+                tabType = MainEntity.Tag.SPELL;
             else
                 throw new RuntimeException("Apparently, the reference  is not the same.");
         }
@@ -74,7 +69,7 @@ public class TabDetailFragment extends Fragment {
         // NOTE: This is called per rotate, so avoid any expensive operations here.
         LinearLayout rootView = (LinearLayout) inflater.inflate(R.layout.fragment_tab_detail, container, false);
 
-        List<Entry> l = DbHandle.getInstance("Testing").fetchAllByTag(tabType);
+        List<Entry> l = DataLoader.getInstance("Testing").fetchAllByTag(tabType);
         for (Entry e : l)
             rootView.addView(e.generateView(getContext()));
 

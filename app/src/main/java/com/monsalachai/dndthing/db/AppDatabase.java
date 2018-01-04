@@ -1,6 +1,8 @@
 package com.monsalachai.dndthing.db;
 
+import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
+import android.arch.persistence.room.RoomDatabase;
 import android.util.Log;
 
 import com.monsalachai.dndthing.App;
@@ -14,26 +16,21 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by mesalu on 12/28/2017.
- * This class is the front facing handle on the
- * internal db workings.
- *
- * Does stuff like convert a DndEntry to an Entry.
+ * Created by mesalu on 12/27/2017.
+ * This class represents a database....
  */
 
-// Todo: figure out "implicit"  modifiers (ex: melee weapons <- str)
-public class DbHandle {
-    // this instance member is the database instance associated to this.
-    private DndDatabase db;
-    // This class member associates instances to table-names.
-    private static final HashMap<String, DbHandle> dbs = new HashMap<>();
+@Database(entities = {MainEntity.class}, version=3)
+public abstract class AppDatabase extends RoomDatabase{
+    public abstract MainDao dndDao();
 
-    // mapped singleton constructor.
-    public static DbHandle getInstance(String character)
+    private static final HashMap<String, AppDatabase> dbs = new HashMap<>();
+    public static AppDatabase getInstance(String character)
     {
-        if (!dbs.containsKey(character)) {
-            DndDatabase database = Room.databaseBuilder(App.getGlobalContext(),
-                    DndDatabase.class,
+        if (!dbs.containsKey(character))
+        {
+            AppDatabase database = Room.databaseBuilder(App.getGlobalContext(),
+                    AppDatabase.class,
                     character)
                     // Todo: disable main thread queries and
                     // implement the use of a "pending" view whilst
@@ -41,26 +38,20 @@ public class DbHandle {
                     .allowMainThreadQueries()
                     .fallbackToDestructiveMigration()
                     .build();
-            dbs.put(character, new DbHandle(database));
+            dbs.put(character, database);
         }
         return dbs.get(character);
     }
 
-    // singleton instance 'destroyer'.
+    /**
+     * Removes the held reference to a specified table.
+     * Does not delete the table, just allows its Room.Database handle to be garbage collected
+     * @param character the table name (ex: the name of the character)
+     */
     public static void destroyInstance(String character)
     {
         if (dbs.containsKey(character))
             dbs.remove(character);
-    }
-
-    private DbHandle(DndDatabase db)
-    {
-        this.db = db;
-    }
-
-    public DndDao getDao()
-    {
-        return this.db.dndDao();
     }
 
     public List<Entry> fetchAllByTag(int flags)
@@ -68,52 +59,52 @@ public class DbHandle {
         LinkedList<Entry> ll = new LinkedList<>();
 
         // load entities by associated tags.
-        if ((flags & DndEntity.Tag.COMBAT) != 0)
-            __loadEntries(ll,  db.dndDao().getCombatEntities());
-        if ((flags & DndEntity.Tag.CHARACTER) != 0)
-            __loadEntries(ll, db.dndDao().getCharacterEntities());
-        if ((flags & DndEntity.Tag.INVENTORY) != 0)
-            __loadEntries(ll, db.dndDao().getInventoryEntities());
-        if ((flags & DndEntity.Tag.SKILL) != 0)
-            __loadEntries(ll, db.dndDao().getSkillEntities());
-        if ((flags & DndEntity.Tag.FEAT) != 0)
-            __loadEntries(ll, db.dndDao().getFeatEntities());
-        if ((flags & DndEntity.Tag.SPELL) != 0)
-            __loadEntries(ll,db.dndDao().getSpellEntities());
+        if ((flags & MainEntity.Tag.COMBAT) != 0)
+            loadEntries(ll,  dndDao().getCombatEntities());
+        if ((flags & MainEntity.Tag.CHARACTER) != 0)
+            loadEntries(ll, dndDao().getCharacterEntities());
+        if ((flags & MainEntity.Tag.INVENTORY) != 0)
+            loadEntries(ll, dndDao().getInventoryEntities());
+        if ((flags & MainEntity.Tag.SKILL) != 0)
+            loadEntries(ll, dndDao().getSkillEntities());
+        if ((flags & MainEntity.Tag.FEAT) != 0)
+            loadEntries(ll, dndDao().getFeatEntities());
+        if ((flags & MainEntity.Tag.SPELL) != 0)
+            loadEntries(ll, dndDao().getSpellEntities());
 
         return ll;
     }
 
-    private void __loadEntries(List<Entry> dest, List<DndEntity> src) {
+    private void loadEntries(List<Entry> dest, List<MainEntity> src) {
 
         // 1)  build a composite hash map of required entities:
-        HashMap<Long, DndEntity> hash = new HashMap<>();
+        HashMap<Long, MainEntity> hash = new HashMap<>();
 
-        for (DndEntity e : src)
+        for (MainEntity e : src)
             hash.put(e.getUuid(), e);
 
         // 2) now load all "dependency" entities:
-        for (DndEntity e  : src)
+        for (MainEntity e  : src)
             for (long id : e.getAffectorsById())
                 if (!hash.containsKey(id))
-                    hash.put(id, db.dndDao().getEntityById(id));
+                    hash.put(id, dndDao().getEntityById(id));
 
         // 3) All required entities are now loaded into hash.
         //    So compose (as complete as possible) entries from
         //    the base entities.
 
-        for (DndEntity e : src)
-            __composeEntry(e, hash,  dest);
+        for (MainEntity e : src)
+            composeEntry(e, hash,  dest);
     }
 
     /**
-     * Creates an Entry object from the target DndEntity, using the dependency
+     * Creates an Entry object from the target MainEntity, using the dependency
      * entities buffered in cache,  and stores it in dest.
      * @param target The "top level" Entity being converted to an  Entry
      * @param cache  A map that associates all (pre-fetched) Entities to their  luid
      * @param dest   A output list to store the newly created Entry in.
      */
-    private void __composeEntry(DndEntity target, Map<Long, DndEntity> cache, List<Entry> dest) {
+    private void composeEntry(MainEntity target, Map<Long, MainEntity> cache, List<Entry> dest) {
         EntryFactory.EntryBuilder eb = new EntryFactory.EntryBuilder();
         // attempt to copy name and description:
         String tmp = target.getName();
@@ -134,7 +125,7 @@ public class DbHandle {
         int value = (d == null) ? target.getValueAsInt() : 0;
         for (long id : target.getAffectorsById()) {
             // only directly support scalars here. (for now!)
-            DndEntity de = cache.get(id);
+            MainEntity de = cache.get(id);
             if (de == null) {
                 Log.v("db", "You're about to crash. Congratulations.");
                 Log.v("db", "The database appears to be malformed. An entity lists a dependency that doesn't exist.");
@@ -149,33 +140,33 @@ public class DbHandle {
         // now look at Type and move from there.
         final int type = target.getType();
 
-        if (((type & DndEntity.Type.ITEM) != 0) || (type & DndEntity.Type.WEAPON) != 0) {
+        if (((type & MainEntity.Type.ITEM) != 0) || (type & MainEntity.Type.WEAPON) != 0) {
             eb.setTypeItem();
             // do other crap here (when applicable.
         }
-        if ((type & DndEntity.Type.WEAPON) != 0)
+        if ((type & MainEntity.Type.WEAPON) != 0)
         {
             eb.setTypeWeapon();
             // set other weapon attributes here when applicable.
         }
-        if ((type & DndEntity.Type.SKILL) != 0)
+        if ((type & MainEntity.Type.SKILL) != 0)
         {
             eb.setTypeSkill();
 
             // create skill misc sources list.
             for (long id : target.getAffectorsById())
             {
-                DndEntity de = cache.get(id);
+                MainEntity de = cache.get(id);
                 eb.addSkillSource(de.getValueAsInt(),
-                                  de.getName(),
-                                  de.getDescription());
+                        de.getName(),
+                        de.getDescription());
             }
         }
-        if ((type & DndEntity.Type.FEAT) != 0)
+        if ((type & MainEntity.Type.FEAT) != 0)
         {
             eb.setTypeFeat();
         }
-        if ((type & DndEntity.Type.SPELL) != 0)
+        if ((type & MainEntity.Type.SPELL) != 0)
         {
             eb.setTypeSpell();
         }
