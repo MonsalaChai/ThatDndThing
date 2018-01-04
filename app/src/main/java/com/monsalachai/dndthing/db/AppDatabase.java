@@ -22,7 +22,7 @@ import java.util.Map;
 
 @Database(entities = {MainEntity.class}, version=3)
 public abstract class AppDatabase extends RoomDatabase{
-    public abstract MainDao dndDao();
+    public abstract MainDao mainDao();
 
     private static final HashMap<String, AppDatabase> dbs = new HashMap<>();
     public static AppDatabase getInstance(String character)
@@ -65,17 +65,17 @@ public abstract class AppDatabase extends RoomDatabase{
 
         // load entities by associated tags.
         if ((flags & MainEntity.Tag.COMBAT) != 0)
-            loadEntries(ll,  dndDao().getCombatEntities());
+            loadEntries(ll,  mainDao().getCombatEntities());
         if ((flags & MainEntity.Tag.CHARACTER) != 0)
-            loadEntries(ll, dndDao().getCharacterEntities());
+            loadEntries(ll, mainDao().getCharacterEntities());
         if ((flags & MainEntity.Tag.INVENTORY) != 0)
-            loadEntries(ll, dndDao().getInventoryEntities());
+            loadEntries(ll, mainDao().getInventoryEntities());
         if ((flags & MainEntity.Tag.SKILL) != 0)
-            loadEntries(ll, dndDao().getSkillEntities());
+            loadEntries(ll, mainDao().getSkillEntities());
         if ((flags & MainEntity.Tag.FEAT) != 0)
-            loadEntries(ll, dndDao().getFeatEntities());
+            loadEntries(ll, mainDao().getFeatEntities());
         if ((flags & MainEntity.Tag.SPELL) != 0)
-            loadEntries(ll, dndDao().getSpellEntities());
+            loadEntries(ll, mainDao().getSpellEntities());
 
         return ll;
     }
@@ -97,7 +97,7 @@ public abstract class AppDatabase extends RoomDatabase{
         for (MainEntity e  : src)
             for (long id : e.getAffectorsById())
                 if (!hash.containsKey(id))
-                    hash.put(id, dndDao().getEntityById(id));
+                    hash.put(id, mainDao().getEntityById(id));
 
         // 3) All required entities are now loaded into hash.
         //    So compose (as complete as possible) entries from

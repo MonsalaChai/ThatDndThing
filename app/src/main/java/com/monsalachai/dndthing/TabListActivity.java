@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.monsalachai.dndthing.db.DataLoader;
+import com.monsalachai.dndthing.db.AppDatabase;
 import com.monsalachai.dndthing.db.MainEntity;
 import com.monsalachai.dndthing.roll.Die;
 
@@ -55,8 +55,9 @@ public class TabListActivity extends AppCompatActivity {
             // If this view is present, then the
             // activity should be in two-pane mode.
             mTwoPane = true;
+            setupTwoPane();
         }
-
+        Log.i("TLA", "Two pane mode set to: " + mTwoPane);
 
         /*  Uncomment to blow out database.
         // 'automate' a storage wipe. (I got lazy)
@@ -66,10 +67,10 @@ public class TabListActivity extends AppCompatActivity {
         */
         // This code exists entirely for testing purposes.
         // remove it before any semblance of production:
-        if (DataLoader.getInstance("Testing").getDao().getAll().size() <= 0)
+        if (AppDatabase.getInstance("Testing").mainDao().getAll().size() <= 0)
         {
             Log.i("TLA", "Autofilling some table entries.");
-            DataLoader dbh = DataLoader.getInstance("Testing");
+            AppDatabase db = AppDatabase.getInstance("Testing");
             MainEntity de = new MainEntity();
             de.setCombatTag(true);
             de.setInventoryTag(true);
@@ -82,7 +83,6 @@ public class TabListActivity extends AppCompatActivity {
             MainEntity de2 = new MainEntity();
             de2.setValue(33);
             de.addAffector(de2.getUuid());
-            de2.setAffectee(de.getUuid());
 
             // todo subclas MainEntity for AttributeEntities that handle
             // auto-converting value and modifier.
@@ -95,7 +95,7 @@ public class TabListActivity extends AppCompatActivity {
             destr.setCharacterTag(true);
             de.addAffector(destr);
 
-            dbh.getDao().insertAll(de, de2, destr);
+            db.mainDao().insertAll(de, de2, destr);
         }
     }
 
@@ -171,74 +171,9 @@ public class TabListActivity extends AppCompatActivity {
         }
     }
 
-    /*
-    public class SimpleItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+   private void setupTwoPane()
+   {
+       // Add on-click listener for FAB:
 
-        private final List<DummyContent.DummyItem> mValues;
-
-        public SimpleItemRecyclerViewAdapter(List<DummyContent.DummyItem> items) {
-            mValues = items;
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.tab_list_content, parent, false);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
-
-            holder.mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mTwoPane) {
-                        Bundle arguments = new Bundle();
-                        arguments.putString(TabDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-                        TabDetailFragment fragment = new TabDetailFragment();
-                        fragment.setArguments(arguments);
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.tab_detail_container, fragment)
-                                .commit();
-                    } else {
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, TabDetailActivity.class);
-                        intent.putExtra(TabDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-
-                        context.startActivity(intent);
-                    }
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return mValues.size();
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public final View mView;
-            public final TextView mIdView;
-            public final TextView mContentView;
-            public DummyContent.DummyItem mItem;
-
-            public ViewHolder(View view) {
-                super(view);
-                mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
-                mContentView = (TextView) view.findViewById(R.id.content);
-            }
-
-            @Override
-            public String toString() {
-                return super.toString() + " '" + mContentView.getText() + "'";
-            }
-        }
-    }
-    */
+   }
 }
