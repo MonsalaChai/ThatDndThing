@@ -54,6 +54,11 @@ public abstract class AppDatabase extends RoomDatabase{
             dbs.remove(character);
     }
 
+    /**
+     * Loads a list of all MainEntities marked with the associated tag(s).
+     * @param flags a composite representing target tags. (Use MainEntity.Tag values)
+     * @return a list of loaded Entry instances.
+     */
     public List<Entry> fetchAllByTag(int flags)
     {
         LinkedList<Entry> ll = new LinkedList<>();
@@ -75,6 +80,11 @@ public abstract class AppDatabase extends RoomDatabase{
         return ll;
     }
 
+    /**
+     * Converts from top-level MainEntities to Entries.
+     * @param dest Where to store freshly made Entry instances.
+     * @param src A list containing all the top level Entity 'targets'
+     */
     private void loadEntries(List<Entry> dest, List<MainEntity> src) {
 
         // 1)  build a composite hash map of required entities:

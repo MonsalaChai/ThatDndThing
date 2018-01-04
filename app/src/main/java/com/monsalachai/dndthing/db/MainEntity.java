@@ -10,6 +10,8 @@ import com.monsalachai.dndthing.R;
 import com.monsalachai.dndthing.roll.Die;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -86,10 +88,13 @@ public class MainEntity {
     @ColumnInfo(name="desciption")
     private String description;
 
+    // This has been removed (for now) as it is currently unused, and prone to falling behind the
+    // schema. The initial intent was to use the doubly-linked state for error checking and correcting
     // The other entities that this entity affects
-    @ColumnInfo(name="affects")
-    private String affects;
+    //@ColumnInfo(name="affects")
+    //private String affects;
 
+    // Todo: pick a better name than "affector".
     @ColumnInfo(name="affectors")
     private String affectors;
 
@@ -118,6 +123,9 @@ public class MainEntity {
     @ColumnInfo(name="spellTag")
     private int spellTag;
 
+    /**
+     * Default constructor for MainEntity, sets default values. (Primarily to avoid NPEs)
+     */
     public MainEntity()
     {
         uuid = generateUuidFromTime();
@@ -125,9 +133,6 @@ public class MainEntity {
         description = App.getGlobalContext().getString(R.string.unused_long_desc);
         value = "0";
         affectors = "";
-        affects = "";
-
-
     }
 
     /**
@@ -146,18 +151,34 @@ public class MainEntity {
         affectors += String.format(",%d", luid);
     }
 
+    // Convenience override for addAffector(long)
     public void addAffector(MainEntity other)
     {
         addAffector(other.getUuid());
     }
 
-    // uuid setter  and getter
-    public void setUuid(long id)
+    /**
+     * Returns a list of all UUIDs associated to other entities that
+     * affect this entitiy.
+     * DOES NOT confirm they actually exist.
+     * @return a list of entity IDs
+     */
+    public List<Long> getAffectorsById()
     {
-        Log.d("MainEntity", "Setting entitiy UUID to: " + id);
-        uuid = id;
+        LinkedList<Long> ll = new LinkedList<>();
+        for (String substring : affectors.split(","))
+            if (substring.length() > 0)
+                ll.add(Long.parseLong(substring));
+
+        return ll;
     }
 
+    //*************************************************************************//
+    // And now for compliance setters and getters:
+    //*************************************************************************//
+
+    // uuid setter  and getter
+    public void setUuid(long id) { uuid = id; }
     public long getUuid()
     {
         return uuid;
@@ -171,67 +192,15 @@ public class MainEntity {
     public void setDescription(String desc) { description = desc; }
     public String getDescription() { return description; }
 
-    // Affectors getter (use addAffector for setting.)
-    public Vector<Long> getAffectorsById()
+    // value setter and getter (the first setter is for compliance, the latter for convenience)
+    public void setValue(String value)
     {
-        Vector<Long> v = new Vector<>();
-        for (String substring : affectors.split(","))
-            if (substring.length() > 0)
-                v.add(Long.parseLong(substring));
-
-        return v;
+        // fly blind (for now, though checking value really should be done.)
+        this.value = value;
     }
-
-    public long[] getAffectorsByIdAsArray()
-    {
-        String[] arr = affectors.split(",");
-        long[] ret = new long[arr.length];
-
-        for (int i = 0 ; i < arr.length; i++)
-            ret[i] = Long.parseLong(arr[i]);
-
-        return ret;
-    }
-
-    public void setAffectee(long id)
-    {
-        StringBuilder sb = new StringBuilder(affects);
-        if (affects.length() > 0)
-            sb.append(",");
-        sb.append(id);
-        affects = sb.toString();
-    }
-    public void setAffectees(String s)
-    {
-        affects = s;
-    }
-    public void setAffectees(Collection<Long> l)
-    {
-        StringBuilder sb = new StringBuilder();
-        for (long i : l)
-            sb.append(",").append(i);
-
-        affects = sb.toString();
-    }
-    public Vector<Integer> getAffecteesById()
-    {
-        Vector<Integer> v = new Vector<>();
-
-        for (String substring  :  affects.split(","))
-            v.add(Integer.parseInt(substring));
-
-        return v;
-    }
-
-    // value setter and getter
     public void setValue(int value)
     {
         this.value = Integer.toString(value);
-    }
-    public void setValue(String value)
-    {
-        // fly blind (for now)
-        this.value = value;
     }
     public void setValue(Die d)
     {
@@ -241,12 +210,10 @@ public class MainEntity {
     {
         return this.value;
     }
-
     public int getValueAsInt()
     {
         return Integer.parseInt(value);
     }
-
     public Die getValueAsDie()
     {
         if (value.contains("d"))
@@ -260,17 +227,16 @@ public class MainEntity {
         return null;
     }
 
-    // For room compatability:
-    public void setAffects(String s) { affects = s; }
-    public String getAffects() { return affects; }
-
-    public void setAffectors(String s) { affectors = s; }
-    public String getAffectors() { return affectors; }
+    // Affector setter and getters (these exist soley for Room compliance and are therefore package
+    // private
+    void setAffectors(String s) { affectors = s; }
+    String getAffectors() { return affectors; }
 
     // todo: do some misuse-checking on type arg
     public void setType(int type) { this.type = type; }
     public int getType() { return type; }
 
+    // Todo: Investigate using a single int, and bitwise queries instead.
     // Ideally the Tag members are to be treated as a boolean.
     // however for sqllite compatibility, they need to be an int internally
     // So fall back to more-or-less standard C 'boolean' practice.
