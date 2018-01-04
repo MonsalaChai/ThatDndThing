@@ -60,7 +60,7 @@ public class MainEntity {
             public static final long WISDOM       = 5;
             public static final long CHARISMA     = 6;
         }
-        // more resreved Ids to come.
+        // more reserved Ids to come.
     }
     private static final AtomicLong ts = new AtomicLong();
     private static long generateUuidFromTime()
