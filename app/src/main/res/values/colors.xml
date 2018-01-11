@@ -6,4 +6,5 @@
     <color name="textBlack">#000000</color>
     <color name="background_entry_weapon">#ff0000</color>
     <color name="background_entry_skill">#aa00fe</color>
+    <color name="background_entry_attribute">#33ff33</color>
 </resources>
