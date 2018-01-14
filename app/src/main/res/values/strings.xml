@@ -7,4 +7,5 @@
 
 
     <string name="unused_skill_source_desc">Source description unavailable.</string>
+    <string name="title_activity_entry_creator">EntryCreatorActivity</string>
 </resources>
