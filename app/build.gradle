@@ -20,6 +20,9 @@ android {
 }
 
 dependencies {
+    // Automatically added stuff:
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    
     // GSON
     compile 'com.google.code.gson:gson:2.8.2'
 

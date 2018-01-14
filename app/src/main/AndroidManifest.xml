@@ -29,6 +29,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.monsalachai.dndthing.TabListActivity" />
         </activity>
+        <activity
+            android:name=".entry.EntryCreatorActivity"
+            android:label="@string/title_activity_entry_creator"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
