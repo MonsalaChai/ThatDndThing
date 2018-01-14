@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -166,6 +167,18 @@ public class Entry {
 
                     }
                 } : null).show();
+            }
+        });
+
+        v.setOnLongClickListener(new View.OnLongClickListener() {
+            // Note: the return value indicates if this handler "consumed" the event
+            // (yes, yes it did)
+            @Override
+            public boolean onLongClick(View view) {
+                Log.i("EntryView", "Long click listener!");
+                Toast toast = Toast.makeText(v.getContext(), "Feature coming...", Toast.LENGTH_SHORT);
+                toast.show();
+                return true;
             }
         });
     }
