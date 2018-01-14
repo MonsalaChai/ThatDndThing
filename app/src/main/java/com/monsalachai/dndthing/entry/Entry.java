@@ -93,6 +93,7 @@ public class Entry {
     public String getRollDescriptor() { return  (mRollable) ? String.format(Locale.US, "%dd%d+%d", mCoefficient, mDie, mConstant) : "Not Rollable";}
     public String getLabel() { return mName;}
     public String getActionDescriptor() { return "Roll!"; }
+    protected int getConstant() { return mConstant; }
 
 
     public RollResult roll()

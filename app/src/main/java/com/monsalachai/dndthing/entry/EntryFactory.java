@@ -66,14 +66,13 @@ public class EntryFactory {
          * Adds a constant to the rollable object.
          * <p>
          * Sets rollable to true if not already set.
-         * Negative numbers disallowed
          *
          * @param value the value to assign as the constant.
          * @return this
          */
         public EntryBuilder addConstantValue(int value) {
             mBuildSite.addProperty("rollable", true);
-            mBuildSite.addProperty("constant", Math.abs(value));
+            mBuildSite.addProperty("constant", value);
             return this;
         }
 
@@ -447,6 +446,33 @@ public class EntryFactory {
 
             array.add(object);
 
+            return this;
+        }
+
+        /**
+         * Sets the "Score" of an attribute.
+         * @param value The Attribute's Score.
+         * @return this
+         */
+        public EntryBuilder setAttributeScore(int value)
+        {
+            setTypeAttribute();
+            mBuildSite.getAsJsonObject("attribute").addProperty("score", value);
+            return this;
+        }
+
+        /**
+         * Set the modifier of the attribute. Ex: Str == 13, modifier should be 1.
+         * Additionally: internally Constant is the same as Modifier,  they will collide.
+         * Calling this method is nearly equivalent to calling setConstantValue, the difference
+         * being that this method will ensure type is set to Attribute.
+         * @param value: the value to set.
+         * @return this
+         */
+        public EntryBuilder setAttributeModifier(int value)
+        {
+            setTypeAttribute();
+            addConstantValue(value);
             return this;
         }
 
