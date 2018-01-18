@@ -5,7 +5,49 @@
     <string name="helptext_coming">More help text coming soon!</string>
     <string name="unused_long_desc">Unused description space</string>
 
+    <string-array name="tab_titles">
+        <item>Character</item>
+        <item>Inventory</item>
+        <item>Combat</item>
+        <item>Spell</item>
+        <item>Skill</item>
+        <item>Feat</item>
+    </string-array>
+
 
     <string name="unused_skill_source_desc">Source description unavailable.</string>
     <string name="title_activity_entry_creator">EntryCreatorActivity</string>
+    <string name="title_activity_entry_maker">EntryMakerActivity</string>
+
+    <string name="dialog_entry_create_title">Entry Creation</string>
+    <string name="dialog_entry_create_pos">Finish</string>
+    <string name="dialog_entry_create_neg">Cancel</string>
+
+    <string name="ecdf_type_selector_title">What are you adding?</string>
+
+    <!--This seems pretty redundant. Revisit to improve cohesion with tab_titles-->
+    <string-array name="ecdf_type_selector_row0">
+        <item>Character</item>
+        <item>Inventory</item>
+        <item>Combat</item>
+    </string-array>
+    <string-array name="ecdf_type_selector_row1">
+        <item>Spell</item>
+        <item>Skill</item>
+        <item>Feat</item>
+    </string-array>
+
+    <string-array name="ecdf_enterable_types">
+        <item>Item</item>
+        <item>Weapon</item>
+        <item>Feat</item>
+        <item>Skill</item>
+        <item>Condition</item>
+    </string-array>
+
+    <string name="die_coefficient_hint">Coefficient</string>
+    <string name="die_diesize_hint">Die</string>
+    <string name="die_constant_hint">Constant</string>
+    <string name="basic_entry_config_switch">Can Be Rolled</string>
+
 </resources>

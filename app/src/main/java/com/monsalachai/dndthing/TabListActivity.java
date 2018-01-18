@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import com.monsalachai.dndthing.db.AppDatabase;
 import com.monsalachai.dndthing.db.MainEntity;
+import com.monsalachai.dndthing.entry.gui.EntryCreatorDialogFragment;
 import com.monsalachai.dndthing.roll.Die;
 
 import java.util.ArrayList;
@@ -105,6 +107,7 @@ public class TabListActivity extends AppCompatActivity {
     }
     public class DndTabAdapter extends RecyclerView.Adapter<DndTabAdapter.ViewHolder>
     {
+        // Todo: load this list from resources. (string array tab_titles)
         public static final String CHARACTER = "Character";
         public static final String INVENTORY = "Inventory";
         public static final String COMBAT    = "Combat";
@@ -174,6 +177,12 @@ public class TabListActivity extends AppCompatActivity {
    private void setupTwoPane()
    {
        // Add on-click listener for FAB:
-
+       FloatingActionButton fab = findViewById(R.id.add_fab);
+       fab.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               EntryCreatorDialogFragment.LaunchDialog(getSupportFragmentManager(), "NYI");
+           }
+       });
    }
 }

@@ -1,16 +1,20 @@
 package com.monsalachai.dndthing;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 import android.view.View;
+
+import com.monsalachai.dndthing.entry.gui.EntryCreatorDialogFragment;
 
 
 /**
@@ -20,7 +24,7 @@ import android.view.View;
  * in a {@link TabListActivity}.
  */
 public class TabDetailActivity extends AppCompatActivity {
-
+    private String mTitle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +60,16 @@ public class TabDetailActivity extends AppCompatActivity {
 
         // handle setting the Title here, not in fragment.
         CollapsingToolbarLayout appBar = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
-        appBar.setTitle(getIntent().getStringExtra("title"));
+
+        mTitle = getIntent().getStringExtra("title");
+        appBar.setTitle(mTitle);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EntryCreatorDialogFragment.LaunchDialog(getSupportFragmentManager(), mTitle);
+            }
+        });
 
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
