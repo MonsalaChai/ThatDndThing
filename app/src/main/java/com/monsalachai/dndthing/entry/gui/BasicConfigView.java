@@ -25,19 +25,16 @@ public class BasicConfigView extends LinearLayout {
 
     public BasicConfigView(Context context) {
         super(context);
+        init();
     }
 
     public BasicConfigView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
     public BasicConfigView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-    }
-
-    @Override
-    public void onFinishInflate() {
-        super.onFinishInflate();
         init();
     }
 
@@ -46,6 +43,7 @@ public class BasicConfigView extends LinearLayout {
     }
 
     private void init() {
+        inflate(getContext(), R.layout.basicconfigview, this);
         mSpinner = findViewById(R.id.type_spinner);
         mSwitch = findViewById(R.id.rollable_switch);
 

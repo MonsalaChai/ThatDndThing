@@ -5,14 +5,15 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="5dp">
 
-    <include layout="@layout/basicconfigview"
+    <com.monsalachai.dndthing.entry.gui.BasicConfigView
         android:id="@+id/ecdf_type_selector"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:layout_margin="3dp"/>
+        android:layout_margin="3dp"
+        android:padding="3dp"/>
 
-    <include layout="@layout/layout_ecdf_weapon_customizer"
-        android:id="@+id/weapon_customizer"
+    <include layout="@layout/layout_die_customizer"
+        android:id="@+id/die_customizer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"/>

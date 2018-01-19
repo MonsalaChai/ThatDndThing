@@ -48,7 +48,7 @@ public class EntryCreatorDialogFragment extends DialogFragment {
         else mOriginName = "???";
 
         // inflate calls onCreateDialog (for some reason)... so call it here rather than there.
-        mView = getLayoutInflater().inflate(R.layout.layout_create_dialog, null);
+        mView = getLayoutInflater().inflate(R.layout.fragment_entry_create_dialog, null);
         ((BasicConfigView)mView.findViewById(R.id.ecdf_type_selector)).setFragment(this);
     }
 
@@ -86,9 +86,9 @@ public class EntryCreatorDialogFragment extends DialogFragment {
         Log.i("ecdf", "State change in " + field + " to " + state);
         if (field.compareTo("Rollable") == 0) {
             if (state)
-                mView.findViewById(R.id.weapon_customizer).setVisibility(View.VISIBLE);
+                mView.findViewById(R.id.die_customizer).setVisibility(View.VISIBLE);
             else
-                mView.findViewById(R.id.weapon_customizer).setVisibility(View.GONE);
+                mView.findViewById(R.id.die_customizer).setVisibility(View.GONE);
         }
     }
 
@@ -101,10 +101,25 @@ public class EntryCreatorDialogFragment extends DialogFragment {
         // hide currently shown view if necessary.
         switch (field) {
             case "Weapon":
+                Log.i("BCStateChange", "Change to Weapon!");
+
+                // allow fallthrough here.
             case "Item":
+                Log.i("BCStateChange", "Change to Item!");
+
+                // Do not obscure weapon view if shown.
+                break;
+
             case "Condition":
+                Log.i("BCStateChange", "Change to Condition!");
+                break;
+
             case "Spell":
+                Log.i("BCStateChange", "Change to Spell!");
+                break;
+
             case "Feat":
+                Log.i("BCStateChange", "Change to Feat!");
                 break;
         }
     }
