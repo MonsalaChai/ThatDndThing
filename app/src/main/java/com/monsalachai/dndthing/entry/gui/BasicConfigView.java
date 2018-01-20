@@ -1,6 +1,5 @@
 package com.monsalachai.dndthing.entry.gui;
 
-import android.app.DialogFragment;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -19,7 +18,7 @@ import com.monsalachai.dndthing.R;
  */
 
 public class BasicConfigView extends LinearLayout {
-    private EntryCreatorDialogFragment mFragment;
+    private ConfigCallbackHandler mCallBack;
     private Spinner mSpinner;
     private Switch mSwitch;
 
@@ -38,9 +37,7 @@ public class BasicConfigView extends LinearLayout {
         init();
     }
 
-    public void setFragment(EntryCreatorDialogFragment fragment) {
-        mFragment = fragment;
-    }
+    public void setmCallBackHandler(ConfigCallbackHandler handler) { mCallBack = handler; }
 
     private void init() {
         inflate(getContext(), R.layout.basicconfigview, this);
@@ -56,19 +53,21 @@ public class BasicConfigView extends LinearLayout {
         mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mFragment.stateChanged("Rollable", isChecked);
+                if (mCallBack != null) mCallBack.onRollableChange(isChecked);
+                else Log.i("ConfigView", "Unable to notify of Rollable state change.");
             }
         });
 
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mFragment.stateChanged(parent.getItemAtPosition(position).toString());
+                if (mCallBack != null) mCallBack.onSelectionChange(parent.getItemAtPosition(position).toString());
+                else Log.i("ConfigView", "Unable to notify of selection change");
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // nothing needed here.
+                Log.i("ConfigView", "Nothing selected by user.");
             }
         });
     }

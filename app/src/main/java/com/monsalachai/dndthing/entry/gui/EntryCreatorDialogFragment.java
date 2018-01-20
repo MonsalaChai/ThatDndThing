@@ -49,7 +49,43 @@ public class EntryCreatorDialogFragment extends DialogFragment {
 
         // inflate calls onCreateDialog (for some reason)... so call it here rather than there.
         mView = getLayoutInflater().inflate(R.layout.fragment_entry_create_dialog, null);
-        ((BasicConfigView)mView.findViewById(R.id.ecdf_type_selector)).setFragment(this);
+        ((BasicConfigView)mView.findViewById(R.id.ecdf_type_selector)).setmCallBackHandler(new ConfigCallbackHandler() {
+            @Override
+            public void onSelectionChange(String newSelection) {
+                switch (newSelection) {
+                    case "Weapon":
+                        Log.i("BCStateChange", "Change to Weapon!");
+
+                        // allow fallthrough here.
+                    case "Item":
+                        Log.i("BCStateChange", "Change to Item!");
+
+                        // Do not obscure weapon view if shown.
+                        break;
+
+                    case "Condition":
+                        Log.i("BCStateChange", "Change to Condition!");
+                        break;
+
+                    case "Spell":
+                        Log.i("BCStateChange", "Change to Spell!");
+                        break;
+
+                    case "Feat":
+                        Log.i("BCStateChange", "Change to Feat!");
+                        break;
+
+                    default:
+                        throw new RuntimeException("Knife Edge roll on field values...");
+                }
+            }
+
+            @Override
+            public void onRollableChange(boolean state) {
+                mView.findViewById(R.id.die_customizer)
+                        .setVisibility((state) ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
     @NonNull
@@ -74,22 +110,6 @@ public class EntryCreatorDialogFragment extends DialogFragment {
                 });
 
         return builder.create();
-    }
-
-    /**
-     * This is a callback available to BasicConfigView that helps in dynamically adding and
-     * removing sub views from this Fragment.
-     * @param field The title of the slider that changed
-     * @param state the state that the slider changed to.
-     */
-    public void stateChanged(String field, boolean state) {
-        Log.i("ecdf", "State change in " + field + " to " + state);
-        if (field.compareTo("Rollable") == 0) {
-            if (state)
-                mView.findViewById(R.id.die_customizer).setVisibility(View.VISIBLE);
-            else
-                mView.findViewById(R.id.die_customizer).setVisibility(View.GONE);
-        }
     }
 
     /**
