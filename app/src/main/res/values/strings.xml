@@ -42,6 +42,7 @@
         <item>Weapon</item>
         <item>Feat</item>
         <item>Skill</item>
+        <item>Spell</item>
         <item>Condition</item>
     </string-array>
 

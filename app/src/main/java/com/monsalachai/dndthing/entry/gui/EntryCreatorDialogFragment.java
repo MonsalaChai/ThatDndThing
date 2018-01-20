@@ -75,8 +75,12 @@ public class EntryCreatorDialogFragment extends DialogFragment {
                         Log.i("BCStateChange", "Change to Feat!");
                         break;
 
+                    case "Skill":
+                        Log.i("BCStateChange", "Change to Skill!");
+                        break;
+
                     default:
-                        throw new RuntimeException("Knife Edge roll on field values...");
+                        throw new RuntimeException("Knife Edge roll on field values..." + newSelection);
                 }
             }
 
