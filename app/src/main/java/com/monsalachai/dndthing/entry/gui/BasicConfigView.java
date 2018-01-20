@@ -18,7 +18,12 @@ import com.monsalachai.dndthing.R;
  */
 
 public class BasicConfigView extends LinearLayout {
-    private ConfigCallbackHandler mCallBack;
+    public interface CallbackHandler {
+        void onSelectionChange(String newSelection);
+        void onRollableChange(boolean state);
+    }
+
+    private CallbackHandler mCallBack;
     private Spinner mSpinner;
     private Switch mSwitch;
 
@@ -37,7 +42,7 @@ public class BasicConfigView extends LinearLayout {
         init();
     }
 
-    public void setmCallBackHandler(ConfigCallbackHandler handler) { mCallBack = handler; }
+    public void setmCallBackHandler(BasicConfigView.CallbackHandler handler) { mCallBack = handler; }
 
     private void init() {
         inflate(getContext(), R.layout.basicconfigview, this);

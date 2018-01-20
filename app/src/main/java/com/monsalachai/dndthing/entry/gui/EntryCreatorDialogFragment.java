@@ -49,7 +49,7 @@ public class EntryCreatorDialogFragment extends DialogFragment {
 
         // inflate calls onCreateDialog (for some reason)... so call it here rather than there.
         mView = getLayoutInflater().inflate(R.layout.fragment_entry_create_dialog, null);
-        ((BasicConfigView)mView.findViewById(R.id.ecdf_type_selector)).setmCallBackHandler(new ConfigCallbackHandler() {
+        ((BasicConfigView)mView.findViewById(R.id.ecdf_type_selector)).setmCallBackHandler(new BasicConfigView.CallbackHandler() {
             @Override
             public void onSelectionChange(String newSelection) {
                 switch (newSelection) {
