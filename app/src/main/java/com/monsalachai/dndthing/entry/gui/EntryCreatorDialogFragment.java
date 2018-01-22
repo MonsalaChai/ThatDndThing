@@ -89,6 +89,12 @@ public class EntryCreatorDialogFragment extends DialogFragment {
                 mView.findViewById(R.id.die_customizer)
                         .setVisibility((state) ? View.VISIBLE : View.GONE);
             }
+
+            @Override
+            public void onNameChange(String name)
+            {
+                Log.i("BCStateChange", "Name set to: " + name);
+            }
         });
     }
 

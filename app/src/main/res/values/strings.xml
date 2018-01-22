@@ -4,6 +4,7 @@
     <string name="unknown_entry">Unknown</string>
     <string name="helptext_coming">More help text coming soon!</string>
     <string name="unused_long_desc">Unused description space</string>
+    <string name="name_hint">Name</string>
 
     <string-array name="tab_titles">
         <item>Character</item>
